@@ -2,7 +2,7 @@ import { connect } from "mongoose";
 
 const connectDB = async () => {             //async functions returns a promise
     try {
-        const con = await connect(`${process.env.MONGO_URL}/beyond-the-margin`)
+        const con = await connect(`${process.env.MONGO_URL}`)
 
         console.log("MONGODB connected!! DB HOST: ", con.connection.host);  // Connection host details
 

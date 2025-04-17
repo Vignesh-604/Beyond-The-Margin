@@ -25,8 +25,12 @@ connectDB()                                                     // promise is re
 .then(() => {
     app.on("error", (error) => console.log("ERROR: ", error))
 
-    app.listen(process.env.PORT || 8000, () => {
+    app.listen(process.env.PORT || 8888, () => {
         console.log("Listening on port no.", process.env.PORT);
     })
 })
 .catch((e) => console.log("Connection error: ", e))
+
+
+import userRoutes from './routes/user.route.js'
+app.use("/api/users", userRoutes)
