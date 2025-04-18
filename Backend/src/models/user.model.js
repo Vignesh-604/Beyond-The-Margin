@@ -30,9 +30,6 @@ const userSchema = new Schema({
         trim: true,
         default: ""
     },
-    dob: {
-        type: Date
-    },
     userType: {
         type: String,
         enum: ["user", "editor", "admin"],
