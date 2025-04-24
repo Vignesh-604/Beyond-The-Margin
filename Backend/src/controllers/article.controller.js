@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Article from "../models/article.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import User from "../models/user.model.js";
+import Interaction from "../models/interaction.model.js";
 
 const publishArticle = async (req, res) => {
     try {
@@ -80,11 +81,19 @@ const getArticleById = async (req, res) => {
             }
         ])
 
-        if (!article) {
+        if (!article || article.length === 0) {
             return res.status(404).json(new ApiResponse(404, null, "Article not found."));
         }
 
-        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch article"));
+        const [bookmarkCount, likeCount, dislikeCount] = await Promise.all([
+            Interaction.countDocuments({ article: articleId, type: "bookmark" }),
+            Interaction.countDocuments({ article: articleId, type: "like" }),
+            Interaction.countDocuments({ article: articleId, type: "dislike" })
+        ]);
+        
+        const fullArticle = {...article[0], bookmarkCount, likeCount, dislikeCount}
+
+        return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
     } catch (error) {
         return res.status(500).json(new ApiResponse(500, null, "Failed to fetch article"));
     }

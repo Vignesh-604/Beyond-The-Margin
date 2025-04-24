@@ -35,7 +35,9 @@ connectDB()                                                     // promise is re
 import userRoutes from './routes/user.route.js'
 import articleRoutes from './routes/article.route.js'
 import commentRoutes from './routes/comment.route.js'
+import interactionRoutes from './routes/interaction.route.js'
 
 app.use("/api/users", userRoutes)
 app.use("/api/articles", articleRoutes)
 app.use("/api/comments", commentRoutes)
+app.use("/api/interactions", interactionRoutes)
