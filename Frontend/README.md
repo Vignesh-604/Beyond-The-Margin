@@ -1,31 +1,4 @@
-# React + Vite
-Great questions. Let's go through it step by step:
-
----
-
-## ✅ Which is Better: Passport or Manual OAuth Flow?
-
-### 📌 **Manual Flow (like in your video)**
-You just saw this method being used. It’s:
-- ✅ **Lightweight** (no need to learn Passport strategies)
-- ✅ **Easier to customize**
-- ✅ **Good for simple Google login**
-- ✅ **Flexible with JWT and your existing auth system**
-- ❌ Slightly more code to handle tokens manually
-
-✅ **Recommended** for your case — especially since you're already using JWT, building your own APIs, and want full control.
-
----
-
-### 📌 Passport (with `passport-google-oauth20`)
-- ✅ Built-in strategy for OAuth
-- ✅ Handles session automatically (unless using JWT separately)
-- ❌ Tighter coupling with Express middleware flow
-- ❌ More to learn and configure
-
-👎 Not needed if you're already comfortable with JWT and want a cleaner frontend flow.
-
----
+# Gogle auth
 
 ## ✅ What You Need to Get Started
 

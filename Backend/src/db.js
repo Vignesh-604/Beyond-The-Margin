@@ -1,14 +1,14 @@
 import { connect } from "mongoose";
 
-const connectDB = async () => {             //async functions returns a promise
+const connectDB = async () => {
     try {
         const con = await connect(`${process.env.MONGO_URL}`)
 
-        console.log("MONGODB connected!! DB HOST: ", con.connection.host);  // Connection host details
+        console.log("MONGODB connected!! DB HOST: ", con.connection.host)
 
     } catch (error) {
         console.log("MONGODB connection error:", error);
-        process.exit(1)                                         // terminate the process
+        process.exit(1)
     }
 }
 

@@ -4,10 +4,26 @@ import { oauth2Client } from "../utils/googleClient.js";
 import User from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { nanoid } from "nanoid";
+import CryptoJS from "crypto-js";
 
 const googleAuth = async (req, res) => {
-    const code = req.query.code;
-    const mode = req.query.mode;
+    const { code, mode } = req.query;
+
+    const options = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    }
+
+    const signedTokens = (_id, email) => {
+        const token = jwt.sign(
+            { _id, email },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_TIMEOUT || "1d" }
+        );
+        return token
+    }
 
     try {
         // Get tokens from Google
@@ -26,9 +42,15 @@ const googleAuth = async (req, res) => {
 
         if (mode === "login") {
             if (!user) {
-                return res.status(404).json(new ApiResponse(404, null, "User not foundl"))
+                return res.status(404).json(new ApiResponse(404, null, "User not found"))
             }
-            return res.status(200).json(new ApiResponse(200, user, "Login successful"))
+            const userData = CryptoJS.AES.encrypt(JSON.stringify(user), process.env.VITE_KEY).toString()
+
+            return res
+                .status(200)
+                .cookie("token", signedTokens(user._id, user.email), options)
+                .cookie("user", userData)
+                .json(new ApiResponse(200, userData, "Login successful"))
         }
 
         if (user) {
@@ -48,27 +70,16 @@ const googleAuth = async (req, res) => {
             avatar: picture,
         });
 
+        const userData = CryptoJS.AES.encrypt(JSON.stringify(user), process.env.VITE_KEY).toString()
 
-        const token = jwt.sign(
-            { _id: user._id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_TIMEOUT || "1d" }
-        );
-
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax",
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
-        }
-
-        return res.status(200)
-            .cookie("token", token, options)
+        return res
+            .cookie("token", signedTokens(user._id, user.email), options)
+            .cookie("user", userData)
+            .status(200)
             .json(new ApiResponse(201, user, "Signup successful"))
 
     } catch (err) {
-        console.error("Google Auth Error:", err.message);
-        return res.status(500).json(new ApiResponse(500, null, "Google login failed"));
+        return res.status(500).json(new ApiResponse(500, err, "Google login failed"));
     }
 };
 
@@ -81,7 +92,7 @@ const logout = (req, res) => {
 const updateProfile = async (req, res) => {
     const { fullname, bio } = req.body
 
-    
+
 }
 
 export {

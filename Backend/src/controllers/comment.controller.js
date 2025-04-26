@@ -1,5 +1,5 @@
-import Comment from "../models/comment.model";
-import ApiResponse from "../utils/ApiResponse";
+import Comment from "../models/comment.model.js";
+import ApiResponse from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
 const addComment = async (req, res) => {

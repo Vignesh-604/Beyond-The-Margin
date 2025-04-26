@@ -1,5 +1,5 @@
-import { ApiResponse } from "../utils/ApiResponse.js";
-import Follow from "../models/follow.models.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import Follow from "../models/follow.model.js";
 import mongoose from "mongoose";
 
 const toggleFollow = async (req, res) => {

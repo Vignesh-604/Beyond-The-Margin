@@ -1,5 +1,5 @@
-import Interaction from "../models/interaction.model";
-import ApiResponse from "../utils/ApiResponse";
+import Interaction from "../models/interaction.model.js";
+import ApiResponse from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
 /**
