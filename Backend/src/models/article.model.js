@@ -6,6 +6,11 @@ const articleSchema = new Schema({
     required: true,
     trim: true
   },
+  subtitle: {
+    type: String,
+    required: true,
+    trim: true
+  },
   content: {
     type: String,
     required: true
@@ -17,16 +22,21 @@ const articleSchema = new Schema({
   },
   category: {
     type: String,
-    trim: true
+    required: true
+  },
+  subCategory: {
+    type: String,
+    required: true
+  },
+  readTime: {
+    type: Number,
+    required: true
   },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
-  image: {
-    type: String
-  }
 }, { timestamps: true });
 
 const Article = model('Article', articleSchema);

@@ -25,7 +25,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    bio: {
+    about: {
         type: String,
         trim: true,
         default: ""

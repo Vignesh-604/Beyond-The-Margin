@@ -5,7 +5,9 @@ import {
     getArticlesByUser,
     getPendingArticles,
     getRandomArticles,
-    searchArticles
+    searchArticles,
+    trendingArticles,
+    filteredArticles,
 } from "../controllers/article.controller.js"
 import express from "express";
 import verifyUser from "../middlewares/auth.js";
@@ -19,5 +21,7 @@ router.get("/user/:userId", getArticlesByUser);
 router.get("/pending", getPendingArticles);
 router.get("/random", getRandomArticles);
 router.get("/search", searchArticles);
+router.get("/trending", trendingArticles);
+router.get("/filtered", filteredArticles);
 
 export default router;

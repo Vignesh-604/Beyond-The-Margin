@@ -6,13 +6,20 @@ import Interaction from "../models/interaction.model.js";
 
 const publishArticle = async (req, res) => {
     try {
-        const { title, content, category } = req.body;
+        const { title, subtitle, content, category, subCategory } = req.body;
         const userId = req.user._id;
 
+        const estimateReadTime = (text) => {
+            const wordsPerMinute = 200;
+            const words = text.trim().split(/\s+/).length;
+            return Math.ceil(words / wordsPerMinute);
+        };
+
         const article = await Article.create({
-            title,
+            title, subtitle,
             content,
-            category,
+            category, subCategory,
+            readTime: estimateReadTime(content),
             user: userId,
         });
 
@@ -73,6 +80,7 @@ const getArticleById = async (req, res) => {
                     title: 1,
                     content: 1,
                     category: 1,
+                    subCategory: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     status: 1,
@@ -90,8 +98,8 @@ const getArticleById = async (req, res) => {
             Interaction.countDocuments({ article: articleId, type: "like" }),
             Interaction.countDocuments({ article: articleId, type: "dislike" })
         ]);
-        
-        const fullArticle = {...article[0], bookmarkCount, likeCount, dislikeCount}
+
+        const fullArticle = { ...article[0], bookmarkCount, likeCount, dislikeCount }
 
         return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
     } catch (error) {
@@ -105,13 +113,9 @@ const getArticlesByUser = async (req, res) => {
         const articles = await Article.find({ user: userId });
         const userData = await User.findById(userId)
 
-        return res
-            .status(200)
-            .json(new ApiResponse(200, { userData, articles }, "User's articles fetched"));
+        return res.status(200).json(new ApiResponse(200, { userData, articles }, "User's articles fetched"));
     } catch (err) {
-        return res
-            .status(500)
-            .json(new ApiResponse(500, null, "Failed to fetch user's articles"));
+        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch user's articles"));
     }
 };
 
@@ -144,6 +148,7 @@ const getPendingArticles = async (req, res) => {
                     title: 1,
                     content: 1,
                     category: 1,
+                    subCategory: 1,
                     createdAt: 1,
                     status: 1,
                     user: 1
@@ -151,13 +156,9 @@ const getPendingArticles = async (req, res) => {
             }
         ])
 
-        return res
-            .status(200)
-            .json(new ApiResponse(200, articles, "Pending articles fetched"));
+        return res.status(200).json(new ApiResponse(200, articles, "Pending articles fetched"));
     } catch (err) {
-        return res
-            .status(500)
-            .json(new ApiResponse(500, null, "Failed to fetch pending articles"));
+        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch pending articles"));
     }
 };
 
@@ -173,13 +174,9 @@ const searchArticles = async (req, res) => {
             ],
         });
 
-        return res
-            .status(200)
-            .json(new ApiResponse(200, articles, "Search results fetched"));
+        return res.status(200).json(new ApiResponse(200, articles, "Search results fetched"));
     } catch (err) {
-        return res
-            .status(500)
-            .json(new ApiResponse(500, null, "Search failed"));
+        return res.status(500).json(new ApiResponse(500, null, "Search failed"));
     }
 };
 
@@ -212,6 +209,7 @@ const getRandomArticles = async (req, res) => {
                     title: 1,
                     content: 1,
                     category: 1,
+                    subCategory: 1,
                     createdAt: 1,
                     status: 1,
                     user: 1,
@@ -219,14 +217,132 @@ const getRandomArticles = async (req, res) => {
             },
         ]);
 
-        return res
-            .status(200)
-            .json(new ApiResponse(200, articles, "Random articles fetched"));
+        return res.status(200).json(new ApiResponse(200, articles, "Random articles fetched"));
     } catch (err) {
-        return res
-            .status(500)
-            .json(new ApiResponse(500, null, "Failed to fetch random articles"));
+        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch random articles"));
     }
+};
+
+const trendingArticles = async (req, res) => {
+    const topArticles = await Interaction.aggregate([
+        {
+            $match: {
+                type: { $in: ["like", "bookmark"] }
+            }
+        },
+        {
+            $group: {
+                _id: "$article",
+                interactionCount: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { interactionCount: -1 }
+        },
+        {
+            $limit: 4
+        },
+        {
+            $lookup: {
+                from: "articles",
+                localField: "_id",
+                foreignField: "_id",
+                as: "article",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "user",
+                            foreignField: "_id",
+                            as: "user",
+                            pipeline: [
+                                {
+                                    $project: { _id: 1, fullname: 1, avatar: 1 }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $project: { updatedAt: 0, content: 0 }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: "$article"
+        },
+        // {
+        //     $match: {
+        //         "article.status": "approved"
+        //     }
+        // }
+    ]);
+
+    return res.status(200).json(new ApiResponse(200, topArticles, "Trending articles fetched"));
+}
+
+const filteredArticles = async (req, res) => {
+    const cat = req.query.filter;
+
+    const categoryMatch = cat !== "all" ? { category: cat } : {};
+
+    const articles = await Article.aggregate([
+        {
+            $facet: {
+                // Step 1: Fetch up to 6 random articles from the selected category (if any)
+                matched: [
+                    { $match: categoryMatch },
+                    { $sample: { size: 6 } }
+                ],
+                // Step 2: Fetch up to 6 random fallback articles from other categories (if selected)
+                fallback: [
+                    { $match: {} },
+                    { $sample: { size: 6 } }
+                ]
+            }
+        },
+        {
+            $project: {
+                // Step 3: Combine both arrays — include only as many fallback as needed
+                articles: {
+                    $concatArrays: [
+                        "$matched",     // matched articles
+                        {
+                            // Filters fallback to avoid articles already in matched
+                            $slice: [       // separate articles that match the filters and giving only specified limit
+                                {
+                                    $filter: {
+                                        input: "$fallback",
+                                        as: "fb",
+                                        cond: { $not: { $in: ["$$fb._id", "$matched._id"] } }   //  not in matched / new articles
+                                    }
+                                },
+                                { $subtract: [6, { $size: "$matched" }] }       // specifying how many needed: 6 - matched
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        { $unwind: "$articles" },                       // Step 4: Flatten the combined array so each article is a separate document
+        { $replaceRoot: { newRoot: "$articles" } },     // Step 5: Replace root with each article object
+
+        // lookup user
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    { $project: { _id: 1, fullname: 1, avatar: 1 } }
+                ]
+            }
+        },
+        { $project: { content: 0, updatedAt: 0 } }
+    ]);
+
+    return res.status(200).json(new ApiResponse(200, articles, "Filtered articles fetched"));
 };
 
 export {
@@ -236,5 +352,7 @@ export {
     getArticlesByUser,
     getPendingArticles,
     getRandomArticles,
-    searchArticles
+    searchArticles,
+    trendingArticles,
+    filteredArticles
 }
