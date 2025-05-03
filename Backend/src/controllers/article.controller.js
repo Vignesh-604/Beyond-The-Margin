@@ -271,6 +271,11 @@ const trendingArticles = async (req, res) => {
         {
             $unwind: "$article"
         },
+        {
+            $project: { article: 1, _id: 0 }
+        },
+        { $replaceRoot: { newRoot: "$article" } },
+        { $unwind: "$user" },
         // {
         //     $match: {
         //         "article.status": "approved"
@@ -284,7 +289,7 @@ const trendingArticles = async (req, res) => {
 const filteredArticles = async (req, res) => {
     const cat = req.query.filter;
 
-    const categoryMatch = cat !== "all" ? { category: cat } : {};
+    const categoryMatch = cat !== "All" ? { category: cat } : {};
 
     const articles = await Article.aggregate([
         {
@@ -339,6 +344,7 @@ const filteredArticles = async (req, res) => {
                 ]
             }
         },
+        { $unwind: "$user" },
         { $project: { content: 0, updatedAt: 0 } }
     ]);
 

@@ -1,19 +1,28 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Pages/Home";
-import Dashboard from "./Pages/Dashboard";
-import Login from "./Pages/Login";
-import NotFound from "./Pages/NotFound";
+import { Outlet, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie"
+import { decrypt } from "./Utils/utils.";
+import { useEffect } from "react";
+import Navbar from "./Components/Navbar";
 
 function App() {
+  const navigate = useNavigate();
+
+  const signedIn = Cookies.get("user")
+
+  let user = signedIn ? decrypt() : null
+  console.log(user);
+  
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/");
+  //   }
+  // }, [])
+  
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+  <div className="bg-gray-50 h-screen">
+    <Navbar />
+    <Outlet context={user}/>
+  </div>
   );
 }
 
