@@ -1,3 +1,4 @@
+import Comment from "../models/comment.model.js";
 import Interaction from "../models/interaction.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
@@ -9,50 +10,65 @@ import mongoose from "mongoose";
  */
 
 const likeDislike = async (req, res) => {
-    try {
-        const { type, articleId, commentId } = req.body;
-        const userId = req.user._id;
 
-        if (!["like", "dislike"].includes(type)) {
-            return res.status(400).json(new ApiResponse(400, null, "Invalid interaction type"));
-        }
-        if (!articleId && !commentId) {
-            return res.status(400).json(new ApiResponse(400, null, "Either articleId or commentId is required"));
-        }
-        if (articleId && commentId) {
-            return res.status(400).json(new ApiResponse(400, null, "Interaction can only be on one of article or comment"));
-        }
+    const { type, articleId, commentId } = req.body;
+    const userId = req.user._id;
 
-        const filter = {
-            user: userId,
-            type: { $in: ["like", "dislike"] },
-            ...(articleId ? { article: articleId } : { comment: commentId })
-        };
+    if (!["like", "dislike"].includes(type)) {
+        return res.status(400).json(new ApiResponse(400, null, "Invalid interaction type"));
+    }
+    if (!articleId && !commentId) {
+        return res.status(400).json(new ApiResponse(400, null, "Either articleId or commentId is required"));
+    }
+    if (articleId && commentId) {
+        return res.status(400).json(new ApiResponse(400, null, "Interaction can only be on one of article or comment"));
+    }
 
-        const existing = await Interaction.findOne(filter);
+    const filter = {
+        user: userId,
+        type: { $in: ["like", "dislike"] },
+        ...(articleId ? { article: articleId } : { comment: commentId })
+    };
 
-        if (existing) {
-            if (existing.type === type) {
-                // Toggle off: If same type then remove it (ex. type:like then remove like)
-                await Interaction.findByIdAndDelete(existing._id);
-                return res.status(200).json(new ApiResponse(200, null, `${type} removed`));
-            } else {
-                // Switch type: if type:like then dislike
-                existing.type = type;
-                await existing.save();
-                return res.status(200).json(new ApiResponse(200, existing, `${type} updated`));
+    const existing = await Interaction.findOne(filter);
+
+    if (existing) {
+        if (existing.type === type) {
+            // Toggle off: If same type then remove it (ex. type:like then remove like)
+            await Interaction.findByIdAndDelete(existing._id);
+
+            if (commentId) {
+                if (type === "like") await Comment.findByIdAndUpdate(commentId, { $inc: { likeCount: -1 } });
+                if (type === "dislike") await Comment.findByIdAndUpdate(commentId, { $inc: { dislikeCount: -1 } });
             }
+
+            return res.status(200).json(new ApiResponse(200, null, `${type} removed`));
         } else {
-            // Create new interaction
-            const newInteraction = await Interaction.create({
-                user: userId,
-                type,
-                ...(articleId ? { article: articleId } : { comment: commentId })
-            });
-            return res.status(201).json(new ApiResponse(201, newInteraction, `${type} added`));
+            // Switch type: if type:like then dislike
+            existing.type = type;
+            await existing.save();
+
+            if (commentId) {
+                if (type === "like") await Comment.findByIdAndUpdate(commentId, { $inc: { likeCount: 1, dislikeCount: -1 } });
+                if (type === "dislike") await Comment.findByIdAndUpdate(commentId, { $inc: { likeCount: -1, dislikeCount: 1 } });
+            }
+
+            return res.status(200).json(new ApiResponse(200, existing, `${type} updated`));
         }
-    } catch (err) {
-        return res.status(500).json(new ApiResponse(500, null, "Interaction failed"));
+    } else {
+        // Create new interaction
+        const newInteraction = await Interaction.create({
+            user: userId,
+            type,
+            ...(articleId ? { article: articleId } : { comment: commentId })
+        });
+
+        if (commentId) {
+            if (type === "like") await Comment.findByIdAndUpdate(commentId, { $inc: { likeCount: 1 } });
+            if (type === "dislike") await Comment.findByIdAndUpdate(commentId, { $inc: { dislikeCount: 1 } });
+        }
+
+        return res.status(201).json(new ApiResponse(201, newInteraction, `${type} added`));
     }
 }
 

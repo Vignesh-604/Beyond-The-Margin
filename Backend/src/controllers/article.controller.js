@@ -47,64 +47,63 @@ const deleteArticle = async (req, res) => {
 }
 
 const getArticleById = async (req, res) => {
-    try {
-        const { articleId } = req.params
-        if (!articleId) {
-            return res.status(404).json(new ApiResponse(404, null, "Article ID not found."));
-        }
-
-        const article = await Article.aggregate([
-            {
-                $match: { _id: new mongoose.Types.ObjectId(articleId) }
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "user",
-                    foreignField: "_id",
-                    as: "user",
-                    pipeline: [
-                        {
-                            $project: {
-                                fullname: 1,
-                                username: 1,
-                                avatar: 1
-                            }
-                        }
-                    ]
-                }
-            },
-            { $unwind: "$user" },
-            {
-                $project: {
-                    title: 1,
-                    content: 1,
-                    category: 1,
-                    subCategory: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                    status: 1,
-                    user: 1
-                }
-            }
-        ])
-
-        if (!article || article.length === 0) {
-            return res.status(404).json(new ApiResponse(404, null, "Article not found."));
-        }
-
-        const [bookmarkCount, likeCount, dislikeCount] = await Promise.all([
-            Interaction.countDocuments({ article: articleId, type: "bookmark" }),
-            Interaction.countDocuments({ article: articleId, type: "like" }),
-            Interaction.countDocuments({ article: articleId, type: "dislike" })
-        ]);
-
-        const fullArticle = { ...article[0], bookmarkCount, likeCount, dislikeCount }
-
-        return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
-    } catch (error) {
-        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch article"));
+    const { articleId, userId } = req.params
+    if (!articleId) {
+        return res.status(404).json(new ApiResponse(404, null, "Article ID not found."));
     }
+
+    const article = await Article.aggregate([
+        {
+            $match: { _id: new mongoose.Types.ObjectId(articleId) }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    {
+                        $project: {
+                            fullname: 1,
+                            username: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        { $unwind: "$user" },
+    ])
+
+    if (!article || article.length === 0) {
+        return res.status(404).json(new ApiResponse(404, null, "Article not found."));
+    }
+
+    const [likeCount, dislikeCount] = await Promise.all([
+        // Interaction.countDocuments({ article: articleId, type: "bookmark" }),
+        Interaction.countDocuments({ article: articleId, type: "like" }),
+        Interaction.countDocuments({ article: articleId, type: "dislike" })
+    ]);
+
+    const fullArticle = {
+        ...article[0],
+        isBookmarked: false,
+        likeCount, isLiked: false,
+        dislikeCount, isDisliked: false
+    }
+
+    if (mongoose.isValidObjectId(userId)) {
+        const interactions = await Interaction.find({ article: articleId, user: userId }).select("type");
+
+        interactions.forEach((interaction) => {
+            if (interaction.type === "bookmark") fullArticle.isBookmarked = true;
+            if (interaction.type === "like") fullArticle.isLiked = true;
+            if (interaction.type === "dislike") fullArticle.isDisliked = true;
+        });
+    }
+
+    return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
 }
 
 const getArticlesByUser = async (req, res) => {

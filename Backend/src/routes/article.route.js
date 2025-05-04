@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.post("/", verifyUser, publishArticle);
 router.delete("/:articleId", verifyUser, deleteArticle);
-router.get("/single/:articleId", getArticleById);
+router.get("/single/:articleId/:userId", getArticleById);
 router.get("/user/:userId", getArticlesByUser);
 router.get("/pending", getPendingArticles);
 router.get("/random", getRandomArticles);

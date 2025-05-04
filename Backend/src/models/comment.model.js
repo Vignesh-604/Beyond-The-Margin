@@ -20,7 +20,9 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Comment',
     default: null
-  }
+  },
+  likeCount: { type: Number, default: 0 },
+  dislikeCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 const Comment = model('Comment', commentSchema);
