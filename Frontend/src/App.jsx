@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import { decrypt } from "./Utils/utils.";
 import { useEffect } from "react";
 import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
 
 function App() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ function App() {
   const signedIn = Cookies.get("user")
 
   let user = signedIn ? decrypt() : null
-  console.log(user);
+  // console.log(user);
   
   // useEffect(() => {
   //   if (!user) {
@@ -22,6 +23,7 @@ function App() {
   <div className="bg-gray-50 h-screen">
     <Navbar />
     <Outlet context={user}/>
+    <Footer />
   </div>
   );
 }

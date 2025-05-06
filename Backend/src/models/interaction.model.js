@@ -40,7 +40,7 @@ interactionSchema.pre("validate", function (next) {
 
 
 // 🔍 Unique interactions (per user, per target, per type)
-interactionSchema.index({ user: 1, article: 1, type: 1 }, { unique: true, sparse: true });
+// interactionSchema.index({ user: 1, article: 1, type: 1 }, { unique: true, sparse: true });
 interactionSchema.index({ user: 1, comment: 1, type: 1 }, { unique: true, partialFilterExpression: { comment: { $exists: true } } });
 
 // 🔍 Useful for counting likes/dislikes/bookmarks

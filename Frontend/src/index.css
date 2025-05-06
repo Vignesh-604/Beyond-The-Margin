@@ -7,7 +7,9 @@
   color: #242424;
 }
 .markdown-body {
-  background-color: #0a345f !important; 
+  background-color: transparent !important; 
   padding: 1rem;
+  color: black !important;
+  font-size: large !important;
   border-radius: 8px;
 }
