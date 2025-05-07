@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Clock, ArrowRight } from 'lucide-react';
 import { TrendingArticleCard, ExploreArticleCard, FeaturedArticlesGrid } from '../Components/ArticleCards';
 import axios from "axios"
-import { dateFormat } from '../Utils/utils.';
-import Footer from '../Components/Footer';
+import { dateFormat } from '../Utils/utils';
 import Loading from '../Components/Loading';
 
 export default function HomePage() {
@@ -17,6 +16,7 @@ export default function HomePage() {
       .then(res => {
         const data = res.data.data
         console.log(data);
+        
         setTrending(data)
         setLoading(false)
       })
@@ -30,7 +30,6 @@ export default function HomePage() {
     axios.get(`/api/articles/filtered?filter=${selectedCategory}`)
       .then(res => {
         const data = res.data.data
-        console.log(data);
         setExplore(data)
         setLoading(false)
       })
@@ -53,7 +52,7 @@ export default function HomePage() {
         {/* Hero featured article */}
         <section className="py-10 border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <div className="flex flex-col space-y-4">
                 <div className="flex items-center text-sm">
                   <span className="uppercase tracking-wider font-medium text-emerald-600">Featured Story</span>

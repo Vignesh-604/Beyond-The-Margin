@@ -2,6 +2,9 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import { oauth2Client } from "../utils/googleClient.js";
 import User from "../models/user.model.js";
+import Interaction from "../models/interaction.model.js";
+import Article from "../models/article.model.js";
+import Follow from "../models/follow.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { nanoid } from "nanoid";
 import CryptoJS from "crypto-js";
@@ -89,13 +92,32 @@ const logout = (req, res) => {
     return res.status(200).clearCookie("token").json(new ApiResponse(200, "", "Logged out successfully"))
 };
 
-const updateProfile = async (req, res) => {
-    const { fullname, bio } = req.body
 
+const getUserStats = async (req, res) => {
+    const userId = req.user._id;
 
+    // Run all queries in parallel
+    const [bookmarkCount, articleCount, followersCount, followingCount, user] = await Promise.all([
+      Interaction.countDocuments({ user: userId, type: "bookmark" }),
+      Article.countDocuments({ user: userId }),
+      Follow.countDocuments({ following: userId }),
+      Follow.countDocuments({ follower: userId }),
+      User.findById(userId).select(" -refreshToken -password")
+    ]);
+
+    const stats = {
+      user,
+      bookmarks: bookmarkCount,
+      articles: articleCount,
+      followers: followersCount,
+      following: followingCount
+    };
+
+    return res.status(200).json(new ApiResponse(200, stats, "User stats fetched"));
 }
 
 export {
     googleAuth,
-    logout
+    logout,
+    getUserStats,
 }

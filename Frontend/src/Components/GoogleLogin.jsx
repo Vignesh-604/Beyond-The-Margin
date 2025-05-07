@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import Cookies from "js-cookie";
-import { decrypt } from "../Utils/utils.";
+import { decrypt } from "../Utils/utils";
 
 const GoogleLoginButton = ({ mode }) => {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ const GoogleLoginButton = ({ mode }) => {
                 const signedIn = Cookies.get("user")
 
                 let user = signedIn ? decrypt() : null
-                user ? navigate("/dashboard") : console.log("Not same")
+                user ? navigate("/") : console.log("Not same")
             }
 
         } catch (error) {
@@ -35,6 +35,7 @@ const GoogleLoginButton = ({ mode }) => {
                 setShowDialog(true);
             }
         }
+        // console.log(code);
     };
 
     const googleLogin = useGoogleLogin({

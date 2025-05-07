@@ -8,6 +8,8 @@ import {
     searchArticles,
     trendingArticles,
     filteredArticles,
+    userArticles,
+    bookmarkedArticles,
 } from "../controllers/article.controller.js"
 import express from "express";
 import verifyUser from "../middlewares/auth.js";
@@ -23,5 +25,7 @@ router.get("/random", getRandomArticles);
 router.get("/search", searchArticles);
 router.get("/trending", trendingArticles);
 router.get("/filtered", filteredArticles);
+router.get("/user", verifyUser, userArticles);
+router.get("/bookmark", verifyUser, bookmarkedArticles);
 
 export default router;

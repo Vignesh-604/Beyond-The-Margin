@@ -3,22 +3,21 @@ import Follow from "../models/follow.model.js";
 import mongoose from "mongoose";
 
 const toggleFollow = async (req, res) => {
-    try {
-        const { followingId } = req.params;
-        if (!followingId || !mongoose.Types.ObjectId) {
-            return res.status(400).json(new ApiResponse(400, null, "Following ID is required"));
-        }
+    const userId = req.user._id
+    const { followingId } = req.params;
 
-        let follow = await Follow.findOneAndDelete({ follower: req.user._id, following: followingId });
-        
-        if (follow === null) {
-            follow = await Follow.create({ follower: user, following: followingId });
-            return res.status(200).json(new ApiResponse(200, follow, "User followed successfully"));
-        } else {
-            return res.status(200).json(new ApiResponse(200, null, "User unfollowed successfully"));
-        }
-    } catch (error) {
-        return res.status(500).json(new ApiResponse(500, null, error.message || "Something went wrong"));
+    if (!followingId || !mongoose.isValidObjectId(followingId)) {
+        return res.status(400).json(new ApiResponse(400, null, "Following ID is required"));
+    }
+
+    let follow = await Follow.findOneAndDelete({ follower: userId, following: followingId });
+
+    if (follow === null) {
+        follow = await Follow.create({ follower: userId, following: followingId });
+
+        return res.status(200).json(new ApiResponse(200, follow, "User followed successfully"));
+    } else {
+        return res.status(200).json(new ApiResponse(200, null, "User unfollowed successfully"));
     }
 }
 
@@ -49,12 +48,20 @@ const getUserFollowers = async (req, res) => {
                     follower: { $first: "$follower" }
                 }
             },
+            { $project: { follower: 1, _id: 0 } },
+            {
+                $unwind: "$follower"
+            },
+            { $replaceRoot: { newRoot: "$follower" } },
             {
                 $project: {
-                    "follower._id": 1,
-                    "follower.fullname": 1,
-                    "follower.username": 1,
-                    "follower.avatar": 1
+                    _id: 1,
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
+                    about: 1,
+                    userType: 1,
+                    followers: 1
                 }
             }
         ])
@@ -102,18 +109,20 @@ const getUserFollowing = async (req, res) => {
                     ]
                 }
             },
+            { $project: { following: 1, _id: 0 } },
             {
                 $unwind: "$following"
             },
+            { $replaceRoot: { newRoot: "$following" } },
             {
                 $project: {
-                    following: {
-                        _id: 1,
-                        fullname: 1,
-                        username: 1,
-                        avatar: 1,
-                        followers: 1
-                    }
+                    _id: 1,
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
+                    about: 1,
+                    userType: 1,
+                    followers: 1
                 }
             }
         ])

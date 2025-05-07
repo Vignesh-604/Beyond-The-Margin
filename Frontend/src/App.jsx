@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie"
-import { decrypt } from "./Utils/utils.";
+import { decrypt } from "./Utils/utils";
 import { useEffect } from "react";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";

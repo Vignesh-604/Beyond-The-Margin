@@ -350,6 +350,55 @@ const filteredArticles = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, articles, "Filtered articles fetched"));
 };
 
+const userArticles = async (req, res) => {
+    const userId = req.user?._id
+
+    const articles = await Article.find({ user: userId }).limit(5).populate("user", "fullname username avatar")
+
+    return res.status(200).json(new ApiResponse(200, articles, "Articles fetched"));
+}
+
+const bookmarkedArticles = async (req, res) => {
+    const userId = req.user?._id
+
+    const articles = await Interaction.aggregate([
+        {
+            $match: { user: new mongoose.Types.ObjectId(userId), type: "bookmark" }
+        },
+        { $limit: 3 },
+        { $sort: { createdAt: -1 } },
+        {
+            $lookup: {
+                from: "articles",
+                localField: "article",
+                foreignField: "_id",
+                as: "article",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "user",
+                            foreignField: "_id",
+                            as: "user",
+                            pipeline: [
+                                {
+                                    $project: { _id: 1, fullname: 1, avatar: 1 }
+                                }
+                            ]
+                        }
+                    },
+                    {$unwind: "$user"}
+                ]
+            }
+        },
+        { $project: { article: 1 } },
+        { $unwind: "$article" },
+        { $replaceRoot: { newRoot: "$article" } }
+    ])
+
+    return res.status(200).json(new ApiResponse(200, articles, "Articles fetched"));
+}
+
 export {
     publishArticle,
     deleteArticle,
@@ -359,5 +408,7 @@ export {
     getRandomArticles,
     searchArticles,
     trendingArticles,
-    filteredArticles
+    filteredArticles,
+    userArticles,
+    bookmarkedArticles
 }

@@ -5,10 +5,10 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import Home from "./Pages/Home";
 import Dashboard from "./Pages/Dashboard";
-import Login from "./Pages/Login";
+import Login from "./Pages/Account/Login";
 import ArticlePage from "./Pages/Articles/Article";
 import NotFound from "./Pages/NotFound";
-import ProfilePage from "./Pages/Profile";
+import ProfilePage from "./Pages/Account/Profile";
 import EditorPage from './Pages/Articles/Editor.jsx';
 
 const router = createBrowserRouter(

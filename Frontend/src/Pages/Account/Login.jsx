@@ -1,4 +1,4 @@
-import GoogleLoginButton from "../Components/GoogleLogin";
+import GoogleLoginButton from "../../Components/GoogleLogin";
 
 // Main authentication page component
 export default function SimplifiedAuthPage() {

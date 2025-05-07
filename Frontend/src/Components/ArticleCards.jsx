@@ -1,14 +1,18 @@
 import { Clock } from 'lucide-react';
-import { dateFormat } from '../Utils/utils.';
+import { dateFormat } from '../Utils/utils';
 
 // Trending article card component
 export function TrendingArticleCard({ article }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center text-xs mb-4">
-        <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
-        <span className="mx-2 text-gray-300">•</span>
-        <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+        <div>
+          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
+          <span className="mx-2 text-gray-300">•</span>
+          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
+          <span className="mx-2 text-gray-300">•</span>
+          <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+        </div>
       </div>
 
       <a href="#" className="block mb-3">
@@ -35,13 +39,23 @@ export function TrendingArticleCard({ article }) {
 }
 
 // More to explore article card component
-export function ExploreArticleCard({ article }) {
+export function ExploreArticleCard({ article, profile = false }) {
   return (
     <article className="flex flex-col border-b border-gray-200 pb-6">
-      <div className="flex items-center text-xs mb-3">
-        <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
-        <span className="mx-2 text-gray-300">•</span>
-        <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+      <div className="flex justify-between items-center text-xs mb-3">
+        <div>
+          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
+          <span className="mx-2 text-gray-300">•</span>
+          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
+          <span className="mx-2 text-gray-300">•</span>
+          <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+        </div>
+        {profile && (
+          <span className="text-xs flex items-center text-gray-500">
+            <Clock className="h-3 w-3 mr-1" />
+            {article?.readTime} min read
+          </span>
+        )}
       </div>
 
       <a href="#" className="block mb-3">
@@ -54,15 +68,17 @@ export function ExploreArticleCard({ article }) {
         {article?.subtitle}
       </p>
 
-      <div className="flex items-center justify-between mt-auto">
-        <a href="#" className="text-sm font-medium text-gray-700 hover:text-emerald-600">
-          By {article?.user.fullname}
-        </a>
-        <span className="text-xs flex items-center text-gray-500">
-          <Clock className="h-3 w-3 mr-1" />
-          {article?.readTime} min read
-        </span>
-      </div>
+      {!profile && (
+        <div className="flex items-center justify-between mt-auto">
+          <a href="#" className="text-sm font-medium text-gray-700 hover:text-emerald-600">
+            By {article?.user.fullname}
+          </a>
+          <span className="text-xs flex items-center text-gray-500">
+            <Clock className="h-3 w-3 mr-1" />
+            {article?.readTime} min read
+          </span>
+        </div>
+      )}
     </article>
   );
 }
@@ -96,8 +112,8 @@ function FeaturedArticleCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img
-            src={article?.user.avatar}
-            className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" 
+              src={article?.user.avatar}
+              className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium"
             />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-900">{article?.user.fullname}</p>

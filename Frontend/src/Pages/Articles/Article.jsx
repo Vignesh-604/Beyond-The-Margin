@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { TrendingArticleCard } from '../../Components/ArticleCards';
 import { Clock, ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
-// import Loading from '../../Components/Loading';
+import Loading from '../../Components/Loading';
 import axios from 'axios';
-import { dateFormat, formatTimestamp } from '../../Utils/utils.';
+import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
 import { useOutletContext, useNavigate } from 'react-router-dom';
@@ -212,7 +212,7 @@ export default function ArticlePage() {
     setReplyText("");
   };
 
-  if (loading) return <div>Hi</div> //<Loading />;
+  if (loading) return <Loading/>
 
   const totalComments = comments.reduce((count, comment) => count + 1 + (comment.replies ? comment.replies.length : 0), 0);
 
@@ -239,7 +239,7 @@ export default function ArticlePage() {
 
             {/* Author Info */}
             <div className="flex items-center mt-6 bg-gray-200">
-              <img src={article.user?.avatar} alt="Author avatar" className="w-12 h-12 rounded-full mr-4 object-cover" />
+              <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-12 h-12 rounded-full mr-4 object-cover" />
               <div>
                 <div className="flex items-center flex-col">
                   <h3 className="font-medium text-gray-900">{article.user?.fullname}</h3>
