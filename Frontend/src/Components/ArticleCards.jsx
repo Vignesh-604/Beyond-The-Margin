@@ -27,9 +27,9 @@ export function TrendingArticleCard({ article }) {
       </p>
 
       <div className="flex items-center justify-between">
-        <a href="#" className="text-sm font-medium text-gray-700 hover:text-emerald-600">
+        <Link to={`/profile/${article.user?._id}`}className="text-sm font-medium text-gray-700 hover:text-emerald-600">
           By {article?.user.fullname}
-        </a>
+        </Link>
         <span className="text-xs flex items-center text-gray-500">
           <Clock className="h-3 w-3 mr-1" />
           {article?.readTime} min read
@@ -71,9 +71,9 @@ export function ExploreArticleCard({ article, profile = false }) {
 
       {!profile && (
         <div className="flex items-center justify-between mt-auto">
-          <a href="#" className="text-sm font-medium text-gray-700 hover:text-emerald-600">
+          <Link to={`/profile/${article.user?._id}`} className="text-sm font-medium text-gray-700 hover:text-emerald-600">
             By {article?.user.fullname}
-          </a>
+          </Link>
           <span className="text-xs flex items-center text-gray-500">
             <Clock className="h-3 w-3 mr-1" />
             {article?.readTime} min read
@@ -127,9 +127,9 @@ function FeaturedArticleCard({
         </div>
       ) : (
         <div className="flex items-center justify-between">
-          <div className="text-sm font-medium text-gray-700">
+          <Link to={`/profile/${article.user?._id}`} className="text-sm font-medium text-gray-700">
             By {article?.user.fullname}
-          </div>
+          </Link>
           <span className="text-sm flex items-center text-gray-500">
             <Clock className="h-4 w-4 mr-1" />
             {article?.readTime} min read

@@ -75,7 +75,7 @@ const getUserFollowers = async (req, res) => {
 // Get users that the current user is following
 const getUserFollowing = async (req, res) => {
     try {
-        const user = req.user?._id;
+        const user = req.params.userId
         if (!user) {
             return res.status(400).json(new ApiResponse(400, null, "Not the user"));
         }

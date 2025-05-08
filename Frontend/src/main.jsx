@@ -16,14 +16,14 @@ const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App />} >
             <Route index element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/articles" element={<ArticlesList />} />
             <Route path="/articles/:articleId" element={<ArticlePage />} />
             <Route path="/editor" element={<EditorPage />} />
-            <Route path="*" element={<NotFound />} />
+            {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
     ))
 

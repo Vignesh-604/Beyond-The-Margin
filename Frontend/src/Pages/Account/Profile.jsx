@@ -17,7 +17,7 @@ const ProfilePage = () => {
 
   const [loading, setLoading] = useState(true)
   const p = useParams()
-  const userId = p.userId ? p.userId : currentUser._id
+  const userId = p.userId ? p.userId : currentUser?._id
 
   useEffect(() => {
     axios.get(`/api/users/${userId}`)
@@ -34,7 +34,7 @@ const ProfilePage = () => {
   useEffect(() => {    
     switch (activeTab) {
       case "articles":
-        axios.get("/api/articles/user")
+        axios.get(`/api/articles/user/${userId}`)
           .then((res) => {
             const data = res.data.data
             setUserArticles(data)
@@ -44,7 +44,7 @@ const ProfilePage = () => {
           })
         break;
       case "bookmarks":
-        axios.get("/api/articles/bookmark")
+        axios.get(`/api/articles/bookmark/${userId}`)
           .then((res) => {
             const data = res.data.data
             setBookmarkedArticles(data)
@@ -54,7 +54,7 @@ const ProfilePage = () => {
           })
         break;
       case "followers":
-        axios.get(`/api/follows/${currentUser._id}`)
+        axios.get(`/api/follows/${userId}`)
           .then((res) => {
             const data = res.data.data            
             setFollowers(data)
@@ -64,7 +64,7 @@ const ProfilePage = () => {
           })
         break;
       case "following":
-        axios.get(`/api/follows/follow/${currentUser._id}`)
+        axios.get(`/api/follows/follow/${userId}`)
           .then((res) => {
             const data = res.data.data            
             setFollowingUsers(data)
@@ -126,7 +126,7 @@ const ProfilePage = () => {
     <div className="max-w-6xl mx-auto px-4 py-8 bg-gray-50">
 
       {/* Profile Header with User Card */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
           <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
             <img src={user.user?.avatar} alt={user.user?.fullname} className="w-full h-full object-cover" />
@@ -180,7 +180,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Tabs */}
-      <div className="border-b border-gray-200 mb-8">
+      <div className="border-b border-gray-200 mb-6">
         <nav className="flex space-x-8">
           <button
             className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'articles'
@@ -224,9 +224,9 @@ const ProfilePage = () => {
       {/* User's Articles Tab Content */}
       {activeTab === 'articles' && (
         <div className="mb-12">
-          <div className="grid gap-8">
+          <div className="grid gap-4">
             {userArticles.map(article => (
-              <div key={article._id} className="mb-8">
+              <div key={article._id} className="mb-4">
                 <ExploreArticleCard article={article} profile={true} />
               </div>
             ))}
@@ -243,9 +243,9 @@ const ProfilePage = () => {
       {/* Bookmarks Tab Content */}
       {activeTab === 'bookmarks' && (
         <div className="mb-12">
-          <div className="grid gap-8">
+          <div className="grid gap-4">
             {bookmarkedArticles.map(article => (
-              <div key={article._id} className="mb-8">
+              <div key={article._id} className="mb-4">
                 <ExploreArticleCard article={article} />
               </div>
             ))}

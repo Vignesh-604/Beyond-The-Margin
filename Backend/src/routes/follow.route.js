@@ -12,6 +12,6 @@ router.post("/toggle/:followingId", verifyUser, toggleFollow)
 
 router.get("/:userId", getUserFollowers)     // Return followers list of a user
 
-router.get("/follow/:userId", verifyUser, getUserFollowing) // Get users that the current user is following
+router.get("/follow/:userId", getUserFollowing) // Get users that the current user is following
 
 export default router

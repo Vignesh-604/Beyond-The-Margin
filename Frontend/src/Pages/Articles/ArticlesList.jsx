@@ -64,8 +64,7 @@ export default function ArticlesList() {
       params.append('page', currentPage);
       params.append('limit', 9);
       params.append('sort', 'newest');
-      console.log(params.toString());
-      
+
       const response = await axios.get(`/api/articles/search?${params.toString()}`);
       const { articles, pagination } = response.data.data || { articles: [], pagination: {} };
       
@@ -118,7 +117,7 @@ export default function ArticlesList() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           >
             <option value="">All Categories</option>
             {categories.map((cat, index) => (
@@ -133,7 +132,7 @@ export default function ArticlesList() {
             value={selectedSubcategory}
             onChange={(e) => setSelectedSubcategory(e.target.value)}
             disabled={!selectedCategory}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             <option value="">All Subcategories</option>
             {availableSubcategories.map((subcat, index) => (
@@ -207,25 +206,25 @@ export default function ArticlesList() {
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={!pagination.hasPrevPage}
-              className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-800 font-semibold">
               Page {pagination.currentPage} of {pagination.totalPages}
             </span>
             
             <button 
               onClick={() => setCurrentPage(prev => prev + 1)}
               disabled={!pagination.hasNextPage}
-              className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
           </div>
           
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-900">
             Showing {pagination.articlesInPage} of {pagination.totalArticles} articles
           </span>
         </div>

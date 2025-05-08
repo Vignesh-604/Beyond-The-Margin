@@ -106,18 +106,6 @@ const getArticleById = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
 }
 
-const getArticlesByUser = async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        const articles = await Article.find({ user: userId });
-        const userData = await User.findById(userId)
-
-        return res.status(200).json(new ApiResponse(200, { userData, articles }, "User's articles fetched"));
-    } catch (err) {
-        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch user's articles"));
-    }
-};
-
 const getPendingArticles = async (req, res) => {
     try {
         const articles = await Article.aggregate([
@@ -332,7 +320,7 @@ const filteredArticles = async (req, res) => {
 };
 
 const userArticles = async (req, res) => {
-    const userId = req.user?._id
+    const userId = req.params.userId
 
     const articles = await Article.find({ user: userId }).limit(5).populate("user", "fullname username avatar")
 
@@ -340,7 +328,7 @@ const userArticles = async (req, res) => {
 }
 
 const bookmarkedArticles = async (req, res) => {
-    const userId = req.user?._id
+    const userId = req.params.userId
 
     const articles = await Interaction.aggregate([
         {
@@ -500,7 +488,6 @@ export {
     publishArticle,
     deleteArticle,
     getArticleById,
-    getArticlesByUser,
     getPendingArticles,
     getRandomArticles,
     trendingArticles,

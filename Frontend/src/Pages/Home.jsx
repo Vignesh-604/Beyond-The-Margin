@@ -74,13 +74,13 @@ export default function HomePage() {
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="flex items-center gap-2">
+                  <Link to={`/profile/${trending[0]?.user?._id}`} className="flex items-center gap-2">
                     <img
                       src={trending[0]?.user.avatar}
                       className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
 
                     <p className="text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
-                  </div>
+                  </Link>
 
                   <div className="flex items-center text-sm text-gray-500">
                     <Clock className="h-4 w-4 mr-1" />
@@ -139,9 +139,9 @@ export default function HomePage() {
 
             {/* Show more button */}
             <div className="flex justify-center mt-12">
-              <button className="px-6 py-3 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-50 font-medium text-sm">
+              <Link to={`/articles`} className="px-6 py-3 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-50 font-medium text-sm">
                 Load more articles
-              </button>
+              </Link>
             </div>
           </div>
         </section>
