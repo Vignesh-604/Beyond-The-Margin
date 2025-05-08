@@ -94,7 +94,7 @@ const logout = (req, res) => {
 
 
 const getUserStats = async (req, res) => {
-    const userId = req.user._id;
+    const userId = req.params.userId;
 
     // Run all queries in parallel
     const [bookmarkCount, articleCount, followersCount, followingCount, user] = await Promise.all([

@@ -10,6 +10,7 @@ import ArticlePage from "./Pages/Articles/Article";
 import NotFound from "./Pages/NotFound";
 import ProfilePage from "./Pages/Account/Profile";
 import EditorPage from './Pages/Articles/Editor.jsx';
+import ArticlesList from './Pages/Articles/ArticlesList.jsx';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -18,7 +19,9 @@ const router = createBrowserRouter(
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/article" element={<ArticlePage />} />
+            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/articles" element={<ArticlesList />} />
+            <Route path="/articles/:articleId" element={<ArticlePage />} />
             <Route path="/editor" element={<EditorPage />} />
             <Route path="*" element={<NotFound />} />
         </Route>

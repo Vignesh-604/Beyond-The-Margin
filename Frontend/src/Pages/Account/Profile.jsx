@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext, useParams } from 'react-router-dom';
 import { ExploreArticleCard } from '../../Components/ArticleCards';
 import axios from 'axios';
 import Loading from '../../Components/Loading';
@@ -14,10 +14,13 @@ const ProfilePage = () => {
   const [bookmarkedArticles, setBookmarkedArticles] = useState([])
   const [followingUsers, setFollowingUsers] = useState([])
   const [followers, setFollowers] = useState([])
+
   const [loading, setLoading] = useState(true)
+  const p = useParams()
+  const userId = p.userId ? p.userId : currentUser._id
 
   useEffect(() => {
-    axios.get("/api/users")
+    axios.get(`/api/users/${userId}`)
     .then((res) => {
       const data = res.data.data
       setUser(data)

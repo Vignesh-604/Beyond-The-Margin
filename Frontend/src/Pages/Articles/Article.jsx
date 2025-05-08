@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { TrendingArticleCard } from '../../Components/ArticleCards';
-import { Clock, ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
 import Loading from '../../Components/Loading';
 import axios from 'axios';
 import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 
 export default function ArticlePage() {
@@ -17,13 +17,13 @@ export default function ArticlePage() {
   const [replyingTo, setReplyingTo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  
   const user = useOutletContext();
   const navigate = useNavigate();
-
-  const articleId = "6815d89c77bee12991063fae"; // In a real app, this would come from route params
-
+  const p = useParams()
+  const articleId = p.articleId
+  
   useEffect(() => {
-    // Fetch article details
     axios.get(`/api/articles/single/${articleId}/${user ? user?._id : false}`)
       .then(res => {
         const data = res.data.data;

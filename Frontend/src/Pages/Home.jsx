@@ -4,6 +4,7 @@ import { TrendingArticleCard, ExploreArticleCard, FeaturedArticlesGrid } from '.
 import axios from "axios"
 import { dateFormat } from '../Utils/utils';
 import Loading from '../Components/Loading';
+import { Link } from 'react-router-dom';
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -15,8 +16,8 @@ export default function HomePage() {
     axios.get(`/api/articles/trending`)
       .then(res => {
         const data = res.data.data
-        console.log(data);
-        
+        // console.log(data);
+
         setTrending(data)
         setLoading(false)
       })
@@ -43,7 +44,7 @@ export default function HomePage() {
   // Extract unique categories
   const categories = ['All', "Software Engineering", "Programming Languages", "Lifestyle & Personal Growth", "Artificial Intelligence"];
 
-  if (loading) return <Loading/>
+  if (loading) return <Loading />
 
   return (
     <div className="min-h-screen bg-white">
@@ -55,42 +56,36 @@ export default function HomePage() {
             <div className="max-w-6xl mx-auto">
               <div className="flex flex-col space-y-4">
                 <div className="flex items-center text-sm">
-                  <span className="uppercase tracking-wider font-medium text-emerald-600">Featured Story</span>
+                  <span className="uppercase tracking-wider font-medium bg-emerald-600 rounded-lg p-1 text-white">Featured Story</span>
+                  <span className="mx-2 text-gray-300">•</span>
+                  <span className="uppercase tracking-wider font-medium text-emerald-600">{trending[0]?.category}</span>
+                  <span className="mx-2 text-gray-300">•</span>
+                  <span className="uppercase tracking-wider font-medium text-emerald-600">{trending[0]?.subCategory}</span>
                   <span className="mx-2 text-gray-300">•</span>
                   <span className="text-gray-500">{dateFormat(trending[0]?.createdAt)}</span>
                 </div>
 
-                <h1 className="text-4xl font-serif font-bold text-gray-900 leading-tight">
+                <Link to={`/articles/${trending[0]?._id}`} className="text-4xl font-serif font-bold text-gray-900 hover:text-emerald-600 leading-tight">
                   {trending[0]?.title}
-                </h1>
+                </Link>
 
                 <p className="text-xl text-gray-600 leading-relaxed">
                   {trending[0]?.subtitle}
                 </p>
 
-                <div className="flex items-center justify-between pt-4">
-                  <div className="flex items-center">
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex items-center gap-2">
                     <img
-                    src={trending[0]?.user.avatar}
-                    className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
+                      src={trending[0]?.user.avatar}
+                      className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
 
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
-                      <p className="text-sm text-gray-500">{trending[0]?.category}</p>
-                    </div>
+                    <p className="text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
                   </div>
 
                   <div className="flex items-center text-sm text-gray-500">
                     <Clock className="h-4 w-4 mr-1" />
                     {trending[0]?.readTime} min read
                   </div>
-                </div>
-
-                <div className="pt-4">
-                  <a href="#" className="inline-flex items-center text-emerald-600 font-medium hover:text-emerald-800">
-                    Continue reading
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </a>
                 </div>
               </div>
             </div>

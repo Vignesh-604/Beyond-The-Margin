@@ -1,10 +1,11 @@
 import { Clock } from 'lucide-react';
 import { dateFormat } from '../Utils/utils';
+import { useNavigate, Link } from 'react-router-dom';
 
 // Trending article card component
 export function TrendingArticleCard({ article }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+    <div className="bg-gray-200/50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-center text-xs mb-4">
         <div>
           <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
@@ -15,11 +16,11 @@ export function TrendingArticleCard({ article }) {
         </div>
       </div>
 
-      <a href="#" className="block mb-3">
+      <Link to={`/articles/${article?._id}`} className="block mb-3">
         <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
           {article?.title}
         </h3>
-      </a>
+      </Link>
 
       <p className="text-gray-600 mb-4 line-clamp-2">
         {article?.subtitle}
@@ -58,11 +59,11 @@ export function ExploreArticleCard({ article, profile = false }) {
         )}
       </div>
 
-      <a href="#" className="block mb-3">
+      <Link to={`/articles/${article?._id}`} className="block mb-3">
         <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
           {article?.title}
         </h3>
-      </a>
+      </Link>
 
       <p className="text-gray-600 mb-4 line-clamp-2 flex-grow">
         {article?.subtitle}
@@ -98,11 +99,11 @@ function FeaturedArticleCard({
         <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
       </div>
 
-      <a href="#" className="block mb-3">
+      <Link to={`/articles/${article?._id}`} className="block mb-3">
         <h3 className={`${isMainArticle ? 'text-3xl' : 'text-2xl'} font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors`}>
           {article?.title}
         </h3>
-      </a>
+      </Link>
 
       <p className="text-gray-600 mb-4 line-clamp-2">
         {article?.subtitle}

@@ -161,25 +161,6 @@ const getPendingArticles = async (req, res) => {
     }
 };
 
-const searchArticles = async (req, res) => {
-    try {
-        const { q } = req.query;
-
-        const articles = await Article.find({
-            status: "approved",
-            $or: [
-                { title: new RegExp(q, "i") },
-                { category: new RegExp(q, "i") },
-            ],
-        });
-
-        return res.status(200).json(new ApiResponse(200, articles, "Search results fetched"));
-    } catch (err) {
-        return res.status(500).json(new ApiResponse(500, null, "Search failed"));
-    }
-};
-
-
 const getRandomArticles = async (req, res) => {
     try {
         const articles = await Article.aggregate([
@@ -387,7 +368,7 @@ const bookmarkedArticles = async (req, res) => {
                             ]
                         }
                     },
-                    {$unwind: "$user"}
+                    { $unwind: "$user" }
                 ]
             }
         },
@@ -399,6 +380,122 @@ const bookmarkedArticles = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, articles, "Articles fetched"));
 }
 
+const searchArticles = async (req, res) => {
+    const {
+        category,
+        subcategory,
+        search,
+        page = 1,
+        limit = 9,
+        sort = 'newest'  // Options: newest, oldest, popular
+    } = req.query;
+
+    // Build match condition based on provided filters
+    let matchCondition = {};
+
+    // Category and subcategory filtering
+    if (category) {
+        matchCondition.category = category;
+    }
+
+    if (subcategory) {
+        matchCondition.subCategory = subcategory;
+    }
+
+    // Search term filtering
+    if (search) {
+        matchCondition.$or = [
+            { title: { $regex: search, $options: 'i' } },
+            { subtitle: { $regex: search, $options: 'i' } },
+            { category: { $regex: search, $options: 'i' } },
+            { subCategory: { $regex: search, $options: 'i' } }
+        ];
+    }
+
+    // Parse pagination parameters
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Determine sort order
+    let sortOptions = {};
+    switch (sort) {
+        case 'oldest':
+            sortOptions = { createdAt: 1 };
+            break;
+        case 'newest':
+            sortOptions = { createdAt: -1 };
+            break;
+    }
+
+    // Count total matching documents for pagination info
+    const totalArticles = await Article.countDocuments(matchCondition);
+
+    // Get paginated and filtered articles
+    const articles = await Article.aggregate([
+        { $match: matchCondition },
+        { $sort: sortOptions },
+        { $skip: skip },
+        { $limit: limitNum },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    { $project: { _id: 1, fullname: 1, avatar: 1 } }
+                ]
+            }
+        },
+        { $unwind: "$user" },
+        { $project: { content: 0, updatedAt: 0 } }
+    ]);
+
+    // If no articles found with filters but search is not applied, fetch random articles
+    if (articles.length === 0 && !search) {
+        const randomArticles = await Article.aggregate([
+            { $sample: { size: limitNum } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "user",
+                    pipeline: [
+                        { $project: { _id: 1, fullname: 1, avatar: 1 } }
+                    ]
+                }
+            },
+            { $unwind: "$user" },
+            { $project: { content: 0, updatedAt: 0 } }
+        ]);
+
+        return res.status(200).json(
+            new ApiResponse(200, randomArticles, "No matching articles found, showing random recommendations")
+        );
+    }
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalArticles / limitNum);
+    const hasNextPage = pageNum < totalPages;
+    const hasPrevPage = pageNum > 1;
+
+    const paginationInfo = {
+        totalArticles,
+        articlesInPage: articles.length,
+        currentPage: pageNum,
+        totalPages,
+        hasNextPage,
+        hasPrevPage
+    };
+
+    return res.status(200).json(
+        new ApiResponse(200, { articles, pagination: paginationInfo }, "Articles fetched successfully")
+    );
+};
+
+
 export {
     publishArticle,
     deleteArticle,
@@ -406,9 +503,9 @@ export {
     getArticlesByUser,
     getPendingArticles,
     getRandomArticles,
-    searchArticles,
     trendingArticles,
     filteredArticles,
     userArticles,
-    bookmarkedArticles
+    bookmarkedArticles,
+    searchArticles,
 }

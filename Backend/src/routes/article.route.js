@@ -22,10 +22,10 @@ router.get("/single/:articleId/:userId", getArticleById);
 router.get("/user/:userId", getArticlesByUser);
 router.get("/pending", getPendingArticles);
 router.get("/random", getRandomArticles);
-router.get("/search", searchArticles);
 router.get("/trending", trendingArticles);
 router.get("/filtered", filteredArticles);
 router.get("/user", verifyUser, userArticles);
 router.get("/bookmark", verifyUser, bookmarkedArticles);
+router.get("/search", searchArticles);
 
 export default router;
