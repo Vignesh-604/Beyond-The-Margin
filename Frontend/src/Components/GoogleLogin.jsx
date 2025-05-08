@@ -58,7 +58,7 @@ const GoogleLoginButton = ({ mode }) => {
         <>
             <button
                 onClick={() => googleLogin()}
-                className="flex items-center justify-center gap-2 border border-gray-300 bg-transparent/70 px-4 py-2 rounded-md shadow-sm hover:scale-105 hover:shadow-md transition-all text-sm font-medium"
+                className="flex items-center justify-center gap-2 border border-gray-300 text-white bg-transparent/70 px-4 py-2 rounded-md shadow-sm hover:scale-105 hover:shadow-md transition-all text-sm font-medium"
             >
                 <FcGoogle size={25} />
                 {buttonText} with Google

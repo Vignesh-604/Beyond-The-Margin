@@ -145,7 +145,7 @@ const ProfilePage = () => {
                 <span className="font-semibold mr-1">{user.articles}</span> Articles
               </Link>
               <Link to={`/user/${user.user?.username}/bookmarks`} className="flex items-center">
-                <span className="font-semibold mr-1">{user.user?.bookmarks}</span> Bookmarks
+                <span className="font-semibold mr-1">{user.bookmarks}</span> Bookmarks
               </Link>
               <button
                 onClick={() => setActiveTab('following')}

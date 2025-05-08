@@ -5,6 +5,7 @@ import axios from "axios"
 import { dateFormat } from '../Utils/utils';
 import Loading from '../Components/Loading';
 import { Link } from 'react-router-dom';
+import { categories } from '../Utils/data';
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -42,7 +43,7 @@ export default function HomePage() {
 
 
   // Extract unique categories
-  const categories = ['All', "Software Engineering", "Programming Languages", "Lifestyle & Personal Growth", "Artificial Intelligence"];
+  // const categories = ['All', "Software Engineering", "Programming Languages", "Lifestyle & Personal Growth", "Artificial Intelligence"];
 
   if (loading) return <Loading />
 
@@ -51,7 +52,7 @@ export default function HomePage() {
       {/* Main content */}
       <main>
         {/* Hero featured article */}
-        <section className="py-10 border-b border-gray-200">
+        <section className="py-6 border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="flex flex-col space-y-4">
@@ -93,7 +94,7 @@ export default function HomePage() {
         </section>
 
         {/* Trending now */}
-        <section className="py-10 border-b border-gray-200 bg-gray-50">
+        <section className="py-4 border-b border-gray-200 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">Trending Now</h2>
 
@@ -110,17 +111,26 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Categories filter */}
             <div className="mb-8 overflow-x-auto">
-              <div className="inline-flex space-x-2 pb-2">
+              <div className="inline-flex space-x-2 pb-2 overflow-">
+                <button
+                  onClick={() => setSelectedCategory("All")}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === "All"
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                >
+                  All
+                </button>
                 {categories.map(category => (
                   <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category
+                    key={category.category}
+                    onClick={() => setSelectedCategory(category.category)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category.category
                       ? 'bg-emerald-600 text-white'
                       : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                       }`}
                   >
-                    {category}
+                    {category.category}
                   </button>
                 ))}
               </div>

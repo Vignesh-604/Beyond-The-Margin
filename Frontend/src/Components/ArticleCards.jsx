@@ -1,6 +1,6 @@
 import { Clock } from 'lucide-react';
 import { dateFormat } from '../Utils/utils';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // Trending article card component
 export function TrendingArticleCard({ article }) {
@@ -27,8 +27,8 @@ export function TrendingArticleCard({ article }) {
       </p>
 
       <div className="flex items-center justify-between">
-        <Link to={`/profile/${article.user?._id}`}className="text-sm font-medium text-gray-700 hover:text-emerald-600">
-          By {article?.user.fullname}
+        <Link to={`/profile/${article?.user?._id}`}className="text-sm font-medium text-gray-700 hover:text-emerald-600">
+          By {article?.user?.fullname}
         </Link>
         <span className="text-xs flex items-center text-gray-500">
           <Clock className="h-3 w-3 mr-1" />
@@ -71,8 +71,8 @@ export function ExploreArticleCard({ article, profile = false }) {
 
       {!profile && (
         <div className="flex items-center justify-between mt-auto">
-          <Link to={`/profile/${article.user?._id}`} className="text-sm font-medium text-gray-700 hover:text-emerald-600">
-            By {article?.user.fullname}
+          <Link to={`/profile/${article?.user?._id}`} className="text-sm font-medium text-gray-700 hover:text-emerald-600">
+            By {article?.user?.fullname}
           </Link>
           <span className="text-xs flex items-center text-gray-500">
             <Clock className="h-3 w-3 mr-1" />
@@ -113,11 +113,11 @@ function FeaturedArticleCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img
-              src={article?.user.avatar}
+              src={article?.user?.avatar}
               className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium"
             />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">{article?.user.fullname}</p>
+              <p className="text-sm font-medium text-gray-900">{article?.user?.fullname}</p>
             </div>
           </div>
           <span className="text-sm flex items-center text-gray-500">
@@ -127,8 +127,8 @@ function FeaturedArticleCard({
         </div>
       ) : (
         <div className="flex items-center justify-between">
-          <Link to={`/profile/${article.user?._id}`} className="text-sm font-medium text-gray-700">
-            By {article?.user.fullname}
+          <Link to={`/profile/${article?.user?._id}`} className="text-sm font-medium text-gray-700">
+            By {article?.user?.fullname}
           </Link>
           <span className="text-sm flex items-center text-gray-500">
             <Clock className="h-4 w-4 mr-1" />

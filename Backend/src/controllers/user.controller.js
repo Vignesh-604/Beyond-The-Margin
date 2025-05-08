@@ -87,9 +87,8 @@ const googleAuth = async (req, res) => {
 };
 
 
-const logout = (req, res) => {
-    console.log("Working")
-    return res.status(200).clearCookie("token").json(new ApiResponse(200, "", "Logged out successfully"))
+const logout = (_req, res) => {
+    return res.status(200).clearCookie("token").clearCookie("user").json(new ApiResponse(200, "", "Logged out successfully"))
 };
 
 

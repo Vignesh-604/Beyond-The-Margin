@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
 import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
+import { useAuth } from '../../Utils/context';
 
 export default function ArticlePage() {
   const [article, setArticle] = useState({});
@@ -18,13 +19,13 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(true);
   
-  const user = useOutletContext();
+  const {currentUser} = useAuth()
   const navigate = useNavigate();
   const p = useParams()
   const articleId = p.articleId
   
   useEffect(() => {
-    axios.get(`/api/articles/single/${articleId}/${user ? user?._id : false}`)
+    axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser?._id : false}`)
       .then(res => {
         const data = res.data.data;
         setArticle(data);
@@ -41,7 +42,7 @@ export default function ArticlePage() {
 
   const fetchComments = () => {
     setCommentsLoading(true);
-    axios.get(`/api/comments/${articleId}/${user ? user?._id : false}`)
+    axios.get(`/api/comments/${articleId}/${currentUser ? currentUser?._id : false}`)
       .then(res => {
         const data = res.data.data;
         setComments(data);
@@ -54,7 +55,7 @@ export default function ArticlePage() {
   };
 
   const handleLikeDislike = (type) => {
-    if (!user) {
+    if (!currentUser) {
       // Redirect to login or show login prompt
       alert("Please login to interact with this article");
       return;
@@ -118,7 +119,7 @@ export default function ArticlePage() {
   };
 
   const handleCommentLikeDislike = (commentId, type) => {
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to interact with comments");
       return;
     }
@@ -139,7 +140,7 @@ export default function ArticlePage() {
   };
 
   const toggleBookmark = () => {
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to bookmark articles");
       return;
     }
@@ -157,7 +158,7 @@ export default function ArticlePage() {
 
   const handleSubmitComment = (e) => {
     e.preventDefault();
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to comment");
       return;
     }
@@ -180,7 +181,7 @@ export default function ArticlePage() {
 
   const handleSubmitReply = (e, commentId) => {
     e.preventDefault();
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to reply");
       return;
     }
@@ -204,7 +205,7 @@ export default function ArticlePage() {
   };
 
   const handleReplyClick = (commentId) => {
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to reply");
       return;
     }
@@ -259,7 +260,7 @@ export default function ArticlePage() {
           </div>
 
           {/* Article Actions */}
-          {user ? (
+          {currentUser ? (
             <div className="px-6 py-4 border-t border-b flex justify-between items-center">
               <div className="flex space-x-6">
                 <button
@@ -306,9 +307,9 @@ export default function ArticlePage() {
             </h3>
 
             {/* Comment Form */}
-            {user && (
+            {currentUser && (
               <form onSubmit={handleSubmitComment} className="flex mb-8">
-                <img src={user.avatar || profile} alt="Your avatar" className="min-w-10 h-10 rounded-full mr-4" />
+                <img src={currentUser.avatar || profile} alt="Your avatar" className="min-w-10 h-10 rounded-full mr-4" />
                 <div className="flex-1">
                   <textarea
                     className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -350,7 +351,7 @@ export default function ArticlePage() {
                           </div>
                           <p className="text-gray-700 mb-3">{comment.content}</p>
 
-                          {user && (
+                          {currentUser && (
                             <div className="flex items-center text-sm">
                               <button
                                 className="text-gray-500 hover:text-emerald-600 mr-4"
@@ -376,7 +377,7 @@ export default function ArticlePage() {
                           )}
 
                           {/* Reply Form */}
-                          {user && replyingTo === comment._id && (
+                          {currentUser && replyingTo === comment._id && (
                             <form onSubmit={(e) => handleSubmitReply(e, comment._id)} className="mt-4">
                               <textarea
                                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -419,7 +420,7 @@ export default function ArticlePage() {
                                   </div>
                                   <p className="text-gray-700 mb-3">{reply.content}</p>
 
-                                  {user && (
+                                  {currentUser && (
                                     <div className="flex items-center text-sm">
                                       <button
                                         className="text-gray-500 hover:text-emerald-600 mr-4"

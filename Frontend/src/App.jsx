@@ -1,30 +1,20 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie"
-import { decrypt } from "./Utils/utils";
-import { useEffect } from "react";
-import Navbar from "./Components/Navbar";
-import Footer from "./Components/Footer";
+import { Outlet, useLocation } from "react-router-dom"
+import Navbar from "./Components/Navbar"
+import Footer from "./Components/Footer"
+import { useAuth } from "./Utils/context"
 
 function App() {
-  const navigate = useNavigate();
+  const location = useLocation()
+  const user = useAuth()
 
-  const signedIn = Cookies.get("user")
+  const hideLayout = location.pathname === "/login"
 
-  let user = signedIn ? decrypt() : null
-  // console.log(user);
-  
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/");
-  //   }
-  // }, [])
-  
   return (
-  <div className="bg-gray-50 h-screen">
-    <Navbar />
-    <Outlet context={user}/>
-    <Footer />
-  </div>
+    <div className="bg-gray-50 min-h-screen">
+      {!hideLayout && <Navbar />}
+      <Outlet />
+      {!hideLayout && <Footer />}
+    </div>
   );
 }
 
