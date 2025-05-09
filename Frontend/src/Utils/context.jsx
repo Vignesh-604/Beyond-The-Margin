@@ -6,20 +6,50 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Function to get current user data from cookies
+  const fetchCurrentUser = () => {
+    setLoading(true);
     const signedIn = Cookies.get("user");
     if (signedIn) {
       const decryptedUser = decrypt(); // you can pass token if needed
       setCurrentUser(decryptedUser);
+    } else {
+      setCurrentUser(null);
     }
+    setLoading(false);
+  };
+
+  // Function to refresh user data (call this after login/signup)
+  const refreshUser = () => {
+    return new Promise((resolve) => {
+      // Re-fetch user data from cookies
+      const signedIn = Cookies.get("user");
+      if (signedIn) {
+        const decryptedUser = decrypt();
+        setCurrentUser(decryptedUser);
+        resolve(decryptedUser);
+      } else {
+        setCurrentUser(null);
+        resolve(null);
+      }
+    });
+  };
+
+  // Initial user fetch
+  useEffect(() => {
+    fetchCurrentUser();
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = {
+    currentUser,
+    setCurrentUser,
+    loading,
+    refreshUser
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

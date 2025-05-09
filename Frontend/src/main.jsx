@@ -5,8 +5,6 @@ import { AuthProvider } from './Utils/context.jsx';
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import Home from "./Pages/Home";
-import Dashboard from "./Pages/Dashboard";
-import Login from "./Pages/Account/Login";
 import ArticlePage from "./Pages/Articles/Article";
 import NotFound from "./Pages/NotFound";
 import ProfilePage from "./Pages/Account/Profile";
@@ -17,8 +15,6 @@ const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App />} >
             <Route index element={<Home />} />
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/articles" element={<ArticlesList />} />

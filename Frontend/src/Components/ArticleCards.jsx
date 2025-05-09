@@ -1,167 +1,188 @@
 import { Clock } from 'lucide-react';
 import { dateFormat } from '../Utils/utils';
 import { Link } from 'react-router-dom';
+import AuthProtectedLink from './AuthLink';
 
 // Trending article card component
 export function TrendingArticleCard({ article }) {
-  return (
-    <div className="bg-gray-200/50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-center text-xs mb-4">
-        <div>
-          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
-          <span className="mx-2 text-gray-300">•</span>
-          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
-          <span className="mx-2 text-gray-300">•</span>
-          <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+    return (
+        <div className="bg-gray-200/50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center text-xs mb-4">
+                <div>
+                    <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+                </div>
+            </div>
+
+            <Link to={`/articles/${article?._id}`} className="block mb-3">
+                <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
+                    {article?.title}
+                </h3>
+            </Link>
+
+            <p className="text-gray-600 mb-4 line-clamp-2">
+                {article?.subtitle}
+            </p>
+
+            <div className="flex items-center justify-between">
+                <AuthProtectedLink
+                    to={`/profile/${article?.user?._id}`}
+                    className="text-sm font-medium text-gray-700 hover:text-emerald-600"
+                    title="Join Our Community"
+                    message="Please log in to view this author's profile and discover more of their content."
+                >
+                    By {article?.user?.fullname}
+                </AuthProtectedLink>
+                <span className="text-xs flex items-center text-gray-500">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {article?.readTime} min read
+                </span>
+            </div>
         </div>
-      </div>
-
-      <Link to={`/articles/${article?._id}`} className="block mb-3">
-        <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
-          {article?.title}
-        </h3>
-      </Link>
-
-      <p className="text-gray-600 mb-4 line-clamp-2">
-        {article?.subtitle}
-      </p>
-
-      <div className="flex items-center justify-between">
-        <Link to={`/profile/${article?.user?._id}`}className="text-sm font-medium text-gray-700 hover:text-emerald-600">
-          By {article?.user?.fullname}
-        </Link>
-        <span className="text-xs flex items-center text-gray-500">
-          <Clock className="h-3 w-3 mr-1" />
-          {article?.readTime} min read
-        </span>
-      </div>
-    </div>
-  );
+    );
 }
 
 // More to explore article card component
 export function ExploreArticleCard({ article, profile = false }) {
-  return (
-    <article className="flex flex-col border-b border-gray-200 pb-6">
-      <div className="flex justify-between items-center text-xs mb-3">
-        <div>
-          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
-          <span className="mx-2 text-gray-300">•</span>
-          <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
-          <span className="mx-2 text-gray-300">•</span>
-          <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
-        </div>
-        {profile && (
-          <span className="text-xs flex items-center text-gray-500">
-            <Clock className="h-3 w-3 mr-1" />
-            {article?.readTime} min read
-          </span>
-        )}
-      </div>
+    return (
+        <article className="flex flex-col border-b border-gray-200 pb-6">
+            <div className="flex justify-between items-center text-xs mb-3">
+                <div>
+                    <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.subCategory}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
+                </div>
+                {profile && (
+                    <span className="text-xs flex items-center text-gray-500">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {article?.readTime} min read
+                    </span>
+                )}
+            </div>
 
-      <Link to={`/articles/${article?._id}`} className="block mb-3">
-        <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
-          {article?.title}
-        </h3>
-      </Link>
+            <Link to={`/articles/${article?._id}`} className="block mb-3">
+                <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
+                    {article?.title}
+                </h3>
+            </Link>
 
-      <p className="text-gray-600 mb-4 line-clamp-2 flex-grow">
-        {article?.subtitle}
-      </p>
+            <p className="text-gray-600 mb-4 line-clamp-2 flex-grow">
+                {article?.subtitle}
+            </p>
 
-      {!profile && (
-        <div className="flex items-center justify-between mt-auto">
-          <Link to={`/profile/${article?.user?._id}`} className="text-sm font-medium text-gray-700 hover:text-emerald-600">
-            By {article?.user?.fullname}
-          </Link>
-          <span className="text-xs flex items-center text-gray-500">
-            <Clock className="h-3 w-3 mr-1" />
-            {article?.readTime} min read
-          </span>
-        </div>
-      )}
-    </article>
-  );
+            {!profile && (
+                <div className="flex items-center justify-between mt-auto">
+                    <AuthProtectedLink
+                        to={`/profile/${article?.user?._id}`}
+                        className="text-sm font-medium text-gray-700 hover:text-emerald-600"
+                        title="Join Our Community"
+                        message="Please log in to view this author's profile and discover more of their content."
+                    >
+                        By {article?.user?.fullname}
+                    </AuthProtectedLink>
+                    <span className="text-xs flex items-center text-gray-500">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {article?.readTime} min read
+                    </span>
+                </div>
+            )}
+        </article>
+    );
 }
 
 function FeaturedArticleCard({
-  article,
-  isMainArticle = false,
-  borderColor = "border-emerald-600",
-  className = ""
+    article,
+    isMainArticle = false,
+    borderColor = "border-emerald-600",
+    className = ""
 }) {
-  return (
-    <div className={`${className}`}>
-      <div className={`border-t-4 ${borderColor} pb-4`}></div>
-      <div className="flex items-center text-xs mb-3">
-        <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
-        <span className="mx-2 text-gray-300">•</span>
-        <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
-      </div>
-
-      <Link to={`/articles/${article?._id}`} className="block mb-3">
-        <h3 className={`${isMainArticle ? 'text-3xl' : 'text-2xl'} font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors`}>
-          {article?.title}
-        </h3>
-      </Link>
-
-      <p className="text-gray-600 mb-4 line-clamp-2">
-        {article?.subtitle}
-      </p>
-
-      {isMainArticle ? (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <img
-              src={article?.user?.avatar}
-              className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium"
-            />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">{article?.user?.fullname}</p>
+    return (
+        <div className={`${className}`}>
+            <div className={`border-t-4 ${borderColor} pb-4`}></div>
+            <div className="flex items-center text-xs mb-3">
+                <span className="uppercase tracking-wider font-medium text-emerald-600">{article?.category}</span>
+                <span className="mx-2 text-gray-300">•</span>
+                <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
             </div>
-          </div>
-          <span className="text-sm flex items-center text-gray-500">
-            <Clock className="h-4 w-4 mr-1" />
-            {article?.readTime} min read
-          </span>
+
+            <Link to={`/articles/${article?._id}`} className="block mb-3">
+                <h3 className={`${isMainArticle ? 'text-3xl' : 'text-2xl'} font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors`}>
+                    {article?.title}
+                </h3>
+            </Link>
+
+            <p className="text-gray-600 mb-4 line-clamp-2">
+                {article?.subtitle}
+            </p>
+
+            {isMainArticle ? (
+                <div className="flex items-center justify-between">
+                    <AuthProtectedLink
+                        to={`/profile/${article?.user?._id}`} className="flex items-center"
+                        title="Join Our Community"
+                        message="Please log in to view this author's profile and discover more of their content."
+                    >
+                        <img
+                            src={article?.user?.avatar}
+                            className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium"
+                        />
+                        <div className="ml-3">
+                            <p className="text-sm font-medium text-gray-900">{article?.user?.fullname}</p>
+                        </div>
+                    </AuthProtectedLink>
+
+                    <span className="text-sm flex items-center text-gray-500">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {article?.readTime} min read
+                    </span>
+                </div>
+            ) : (
+                <div className="flex items-center justify-between">
+                    <AuthProtectedLink
+                        to={`/profile/${article?.user?._id}`}
+                        className="text-sm font-medium text-gray-700"
+                        title="Join Our Community"
+                        message="Please log in to view this author's profile and discover more of their content."
+                    >
+                        By {article?.user?.fullname}
+                    </AuthProtectedLink>
+                    <span className="text-sm flex items-center text-gray-500">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {article?.readTime} min read
+                    </span>
+                </div>
+            )}
         </div>
-      ) : (
-        <div className="flex items-center justify-between">
-          <Link to={`/profile/${article?.user?._id}`} className="text-sm font-medium text-gray-700">
-            By {article?.user?.fullname}
-          </Link>
-          <span className="text-sm flex items-center text-gray-500">
-            <Clock className="h-4 w-4 mr-1" />
-            {article?.readTime} min read
-          </span>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
 
 // Usage example in the featured articles grid
 export function FeaturedArticlesGrid({ featuredArticles }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12  text-white">
-      {/* Main featured article */}
-      <div className="md:col-span-8">
-        <FeaturedArticleCard
-          article={featuredArticles[0]}
-          isMainArticle={true}
-          borderColor="border-emerald-600"
-          className="text-white"
-        />
-      </div>
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12  text-white">
+            {/* Main featured article */}
+            <div className="md:col-span-8">
+                <FeaturedArticleCard
+                    article={featuredArticles[0]}
+                    isMainArticle={true}
+                    borderColor="border-emerald-600"
+                    className="text-white"
+                />
+            </div>
 
-      {/* Secondary featured article */}
-      <div className="md:col-span-4">
-        <FeaturedArticleCard
-          article={featuredArticles[1]}
-          borderColor="border-gray-300"
-          className="text-white"
-        />
-      </div>
-    </div>
-  );
+            {/* Secondary featured article */}
+            <div className="md:col-span-4">
+                <FeaturedArticleCard
+                    article={featuredArticles[1]}
+                    borderColor="border-gray-300"
+                    className="text-white"
+                />
+            </div>
+        </div>
+    );
 }

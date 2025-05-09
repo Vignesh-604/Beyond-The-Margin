@@ -3,26 +3,35 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import Cookies from "js-cookie";
-import { decrypt } from "../Utils/utils";
+import { useAuth } from "../Utils/context";
 
-const GoogleLoginButton = ({ mode }) => {
+const GoogleLoginButton = ({ mode, onLoginSuccess }) => {
+    const { refreshUser } = useAuth();
     const navigate = useNavigate();
     const [showDialog, setShowDialog] = useState(false);
     const buttonText = mode === "login" ? "Login" : "Sign up";
-
     const [currentMode, setCurrentMode] = useState(mode);
 
     const attemptAuth = async (code, modeToUse) => {
         try {
-            const res = await axios.get(`/api/users/auth/google?code=${code}&mode=${modeToUse}`, { withCredentials: true },);
+            const res = await axios.get(
+                `/api/users/auth/google?code=${code}&mode=${modeToUse}`, 
+                { withCredentials: true }
+            );
+            
             if (res.data.success) {
-                const signedIn = Cookies.get("user")
-
-                let user = signedIn ? decrypt() : null
-                user ? navigate("/") : console.log("Not same")
+                // After successful authentication, wait for cookie to be set
+                // This small timeout ensures the cookie is available before refreshing user data
+                setTimeout(async () => {
+                    // Get updated user info from cookies via the refreshUser function
+                    await refreshUser();
+                    
+                    // Call the callback function to notify parent component
+                    if (onLoginSuccess) {
+                        onLoginSuccess();
+                    }
+                }, 100);
             }
-
         } catch (error) {
             console.error("Auth attempt failed:", error.response?.data || error.message);
             const message = error.response?.data?.message;
@@ -35,7 +44,6 @@ const GoogleLoginButton = ({ mode }) => {
                 setShowDialog(true);
             }
         }
-        // console.log(code);
     };
 
     const googleLogin = useGoogleLogin({
@@ -47,7 +55,6 @@ const GoogleLoginButton = ({ mode }) => {
             console.error("Google login error", err);
         },
     });
-
 
     const handleDialogAction = () => {
         setShowDialog(false);

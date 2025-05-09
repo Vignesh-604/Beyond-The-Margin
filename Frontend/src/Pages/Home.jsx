@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Clock, ArrowRight } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { TrendingArticleCard, ExploreArticleCard, FeaturedArticlesGrid } from '../Components/ArticleCards';
 import axios from "axios"
 import { dateFormat } from '../Utils/utils';
 import Loading from '../Components/Loading';
 import { Link } from 'react-router-dom';
 import { categories } from '../Utils/data';
+import AuthProtectedLink from '../Components/AuthLink';
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -17,8 +18,6 @@ export default function HomePage() {
     axios.get(`/api/articles/trending`)
       .then(res => {
         const data = res.data.data
-        // console.log(data);
-
         setTrending(data)
         setLoading(false)
       })
@@ -40,10 +39,6 @@ export default function HomePage() {
         // setLoading(false)
       })
   }, [selectedCategory])
-
-
-  // Extract unique categories
-  // const categories = ['All', "Software Engineering", "Programming Languages", "Lifestyle & Personal Growth", "Artificial Intelligence"];
 
   if (loading) return <Loading />
 
@@ -75,13 +70,18 @@ export default function HomePage() {
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t">
-                  <Link to={`/profile/${trending[0]?.user?._id}`} className="flex items-center gap-2">
+                  <AuthProtectedLink
+                    to={`/profile/${trending[0]?.user?._id}`}
+                    className="flex items-center gap-2"
+                    title="Join Our Community"
+                    message="Please log in to view this author's profile and discover more of their content."
+                  >
                     <img
                       src={trending[0]?.user.avatar}
                       className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
 
                     <p className="text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
-                  </Link>
+                  </AuthProtectedLink>
 
                   <div className="flex items-center text-sm text-gray-500">
                     <Clock className="h-4 w-4 mr-1" />
@@ -98,7 +98,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">Trending Now</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 overflow-scroll gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {trending.slice(1).map(article => (
                 <TrendingArticleCard key={article._id} article={article} />
               ))}

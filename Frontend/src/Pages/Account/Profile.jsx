@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useOutletContext, useParams } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ExploreArticleCard } from '../../Components/ArticleCards';
 import axios from 'axios';
 import Loading from '../../Components/Loading';
 import { dateFormat } from '../../Utils/utils';
 import profile from "../../Assets/Profile.png"
+import { useAuth } from '../../Utils/context';
 
 const ProfilePage = () => {
-  const currentUser = useOutletContext()
+  const { currentUser } = useAuth()
   const [user, setUser] = useState([])
   const [activeTab, setActiveTab] = useState('articles');
   const [userArticles, setUserArticles] = useState([])
@@ -15,23 +16,27 @@ const ProfilePage = () => {
   const [followingUsers, setFollowingUsers] = useState([])
   const [followers, setFollowers] = useState([])
 
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const p = useParams()
   const userId = p.userId ? p.userId : currentUser?._id
 
   useEffect(() => {
-    axios.get(`/api/users/${userId}`)
-    .then((res) => {
-      const data = res.data.data
-      setUser(data)
-      setLoading(false)
-    })
-    .catch(e => {
-      console.log(e);
-    })
+    if (!currentUser) navigate(-1)
+    else {
+      axios.get(`/api/users/${userId}`)
+        .then((res) => {
+          const data = res.data.data
+          setUser(data)
+          setLoading(false)
+        })
+        .catch(e => {
+          console.log(e);
+        })
+    }
   }, [])
 
-  useEffect(() => {    
+  useEffect(() => {
     switch (activeTab) {
       case "articles":
         axios.get(`/api/articles/user/${userId}`)
@@ -56,7 +61,7 @@ const ProfilePage = () => {
       case "followers":
         axios.get(`/api/follows/${userId}`)
           .then((res) => {
-            const data = res.data.data            
+            const data = res.data.data
             setFollowers(data)
           })
           .catch(e => {
@@ -66,7 +71,7 @@ const ProfilePage = () => {
       case "following":
         axios.get(`/api/follows/follow/${userId}`)
           .then((res) => {
-            const data = res.data.data            
+            const data = res.data.data
             setFollowingUsers(data)
           })
           .catch(e => {
@@ -86,10 +91,10 @@ const ProfilePage = () => {
     <div key={user._id} className="flex items-start p-4 border rounded-lg shadow-sm">
       <div className="flex-shrink-0 mr-4">
         <div className="w-16 h-16 rounded-full overflow-hidden">
-          <img 
-            src={user?.avatar || profile} 
-            alt={user?.fullname || "User"} 
-            className="w-full h-full object-cover" 
+          <img
+            src={user?.avatar || profile}
+            alt={user?.fullname || "User"}
+            className="w-full h-full object-cover"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = profile;
@@ -97,12 +102,12 @@ const ProfilePage = () => {
           />
         </div>
       </div>
-      
+
       {/* Rest of the profile card content */}
       <div className="flex-1 min-w-0">
         <h3 className="text-lg font-semibold text-gray-900 truncate">{user?.fullname}</h3>
         <p className="text-sm text-gray-500 mb-1">@{user?.username}</p>
-  
+
         {user?.userType !== "user" && (
           <div className="mt-2">
             <span className="px-2 py-0.5 text-xs text-white bg-green-600 rounded-full uppercase">
@@ -111,7 +116,7 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
-  
+
       <div className="ml-4">
         <button className="px-4 py-1 text-sm border border-green-600 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-colors">
           Follow

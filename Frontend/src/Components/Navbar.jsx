@@ -3,6 +3,7 @@ import { BookOpen, User, Menu, X, LogOut } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Utils/context';
 import axios from 'axios';
+import AuthProtectedLink from './AuthLink';
 
 function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,7 +14,7 @@ function Navbar() {
         try {
             await axios.get("/api/users/logout");
             navigate("/");
-            window.location.reload(); // Force refresh to update auth state
+            window.location.reload();
         } catch (error) {
             console.error("Logout failed:", error);
         }
@@ -99,12 +100,14 @@ function Navbar() {
                             </div>
                         ) : (
                             <div className="hidden md:flex items-center space-x-4">
-                                <NavLink
-                                    to="/login"
+                                <AuthProtectedLink
+                                    to="/"
                                     className="text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-full"
+                                    title="Join Our Community"
+                                    message="Please log in to view this author's profile and discover more of their content."
                                 >
                                     Get Started
-                                </NavLink>
+                                </AuthProtectedLink>
                             </div>
                         )}
 
@@ -198,18 +201,14 @@ function Navbar() {
                         ) : (
                             <div className="mt-3 space-y-3">
                                 <div className="flex space-x-3">
-                                    <NavLink
-                                        to="/login"
-                                        className="flex-1 flex items-center justify-center bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded-full text-base font-medium"
-                                    >
-                                        Sign In
-                                    </NavLink>
-                                    <NavLink
-                                        to="/login"
+                                    <AuthProtectedLink
+                                        to="/"
                                         className="flex-1 flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-full text-base font-medium"
+                                        title="Join Our Community"
+                                        message="Please log in to view this author's profile and discover more of their content."
                                     >
                                         Get Started
-                                    </NavLink>
+                                    </AuthProtectedLink>
                                 </div>
                             </div>
                         )}
