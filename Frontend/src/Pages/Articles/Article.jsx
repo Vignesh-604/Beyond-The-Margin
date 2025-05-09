@@ -6,7 +6,7 @@ import axios from 'axios';
 import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
-import { useOutletContext, useNavigate, useParams} from 'react-router-dom';
+import { useOutletContext, useNavigate, useParams, Link } from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
 
@@ -18,12 +18,12 @@ export default function ArticlePage() {
   const [replyingTo, setReplyingTo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(true);
-  
-  const {currentUser} = useAuth()
+
+  const { currentUser } = useAuth()
   const navigate = useNavigate();
   const p = useParams()
   const articleId = p.articleId
-  
+
   useEffect(() => {
     axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser?._id : false}`)
       .then(res => {
@@ -213,7 +213,7 @@ export default function ArticlePage() {
     setReplyText("");
   };
 
-  if (loading) return <Loading/>
+  if (loading) return <Loading />
 
   const totalComments = comments.reduce((count, comment) => count + 1 + (comment.replies ? comment.replies.length : 0), 0);
 
@@ -239,15 +239,18 @@ export default function ArticlePage() {
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{article.title}</h1>
 
             {/* Author Info */}
-            <div className="flex items-center mt-6 bg-gray-200">
-              <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-12 h-12 rounded-full mr-4 object-cover" />
-              <div>
-                <div className="flex items-center flex-col">
-                  <h3 className="font-medium text-gray-900">{article.user?.fullname}</h3>
-                  <div className="text-gray-500">@{article.user?.username}</div>
+            <div className='flex justify-between items-center mt-4'>
+              <Link to={`/profile/${article?.user?._id}`} className="flex items-center bg-gray-200 w-fit">
+                <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-12 h-12 rounded-full mr-4 object-cover" />
+                <div>
+                  <div className="flex items-center flex-col">
+                    <h3 className="font-medium text-gray-900">{article.user?.fullname}</h3>
+                    <div className="text-gray-500">@{article.user?.username}</div>
+                  </div>
                 </div>
-              </div>
-              <button className="ml-auto border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-full text-sm transition-colors">
+              </Link>
+
+              <button className=" border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white font-semibold px-4 py-2 my-4 rounded-xl text-lg transition-colors">
                 Follow
               </button>
             </div>

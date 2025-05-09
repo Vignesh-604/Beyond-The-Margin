@@ -23,7 +23,7 @@ const router = createBrowserRouter(
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/articles" element={<ArticlesList />} />
             <Route path="/articles/:articleId" element={<ArticlePage />} />
-            <Route path="/editor" element={<EditorPage />} />
+            <Route path="/publish" element={<EditorPage />} />
             {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
     ))

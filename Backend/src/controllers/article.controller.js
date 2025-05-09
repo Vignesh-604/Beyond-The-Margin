@@ -208,7 +208,7 @@ const trendingArticles = async (req, res) => {
             $sort: { interactionCount: -1 }
         },
         {
-            $limit: 4
+            $limit: 5
         },
         {
             $lookup: {
