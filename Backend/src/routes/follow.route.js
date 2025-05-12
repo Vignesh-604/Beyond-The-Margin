@@ -8,7 +8,7 @@ import verifyUser from "../middlewares/auth.js";
 
 const router = Router()
 
-router.post("/toggle/:followingId", verifyUser, toggleFollow)
+router.post("/:followingId", verifyUser, toggleFollow)
 
 router.get("/:userId", getUserFollowers)     // Return followers list of a user
 

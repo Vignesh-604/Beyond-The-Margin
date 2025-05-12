@@ -45,7 +45,7 @@ const googleAuth = async (req, res) => {
 
         if (mode === "login") {
             if (!user) {
-                return res.status(404).json(new ApiResponse(404, null, "User not found"))
+                return res.status(404).json(new ApiResponse(404, null, "User does not exist"))
             }
             const userData = CryptoJS.AES.encrypt(JSON.stringify(user), process.env.VITE_KEY).toString()
 
@@ -93,23 +93,25 @@ const logout = (_req, res) => {
 
 
 const getUserStats = async (req, res) => {
-    const userId = req.params.userId;
+    const { userId, currentUser } = req.params
 
     // Run all queries in parallel
-    const [bookmarkCount, articleCount, followersCount, followingCount, user] = await Promise.all([
-      Interaction.countDocuments({ user: userId, type: "bookmark" }),
-      Article.countDocuments({ user: userId }),
-      Follow.countDocuments({ following: userId }),
-      Follow.countDocuments({ follower: userId }),
-      User.findById(userId).select(" -refreshToken -password")
+    const [bookmarkCount, articleCount, followersCount, followingCount, follow, user] = await Promise.all([
+        Interaction.countDocuments({ user: userId, type: "bookmark" }),
+        Article.countDocuments({ user: userId }),
+        Follow.countDocuments({ following: userId }),
+        Follow.countDocuments({ follower: userId }),
+        currentUser ? Follow.countDocuments({ following: userId, follower: currentUser }) : false,
+        User.findById(userId).select(" -refreshToken -password")
     ]);
 
     const stats = {
-      user,
-      bookmarks: bookmarkCount,
-      articles: articleCount,
-      followers: followersCount,
-      following: followingCount
+        user,
+        follow: follow ? true : false,
+        bookmarks: bookmarkCount,
+        articles: articleCount,
+        followers: followersCount,
+        following: followingCount
     };
 
     return res.status(200).json(new ApiResponse(200, stats, "User stats fetched"));

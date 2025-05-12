@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ExploreArticleCard } from '../../Components/ArticleCards';
 import axios from 'axios';
 import Loading from '../../Components/Loading';
 import { dateFormat } from '../../Utils/utils';
-import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
+import FollowCard from '../../Components/FollowCard';
 
 const ProfilePage = () => {
   const { currentUser } = useAuth()
-  const [user, setUser] = useState([])
+  const [user, setUser] = useState()
   const [activeTab, setActiveTab] = useState('articles');
   const [userArticles, setUserArticles] = useState([])
   const [bookmarkedArticles, setBookmarkedArticles] = useState([])
@@ -24,7 +24,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (!currentUser) navigate(-1)
     else {
-      axios.get(`/api/users/${userId}`)
+      axios.get(`/api/users/${userId}/${currentUser?._id}`)
         .then((res) => {
           const data = res.data.data
           setUser(data)
@@ -34,7 +34,7 @@ const ProfilePage = () => {
           console.log(e);
         })
     }
-  }, [])
+  }, [userId])
 
   useEffect(() => {
     switch (activeTab) {
@@ -63,6 +63,8 @@ const ProfilePage = () => {
           .then((res) => {
             const data = res.data.data
             setFollowers(data)
+            console.log(data);
+
           })
           .catch(e => {
             console.log(e);
@@ -83,47 +85,16 @@ const ProfilePage = () => {
         break;
     }
 
-  }, [activeTab])
+  }, [activeTab, userId])
 
+  const toggleFollow = () => {
+    axios.post(`/api/follows/${userId}`)
+      .then(res => {
+        const data = res.data.data
+        setUser({ ...user, follow: data, followers: data ? user.followers + 1 : user.followers - 1 })
+      })
+  }
 
-  // Function to render profile cards for following/followers
-  const renderProfileCard = (user) => (
-    <div key={user._id} className="flex items-start p-4 border rounded-lg shadow-sm">
-      <div className="flex-shrink-0 mr-4">
-        <div className="w-16 h-16 rounded-full overflow-hidden">
-          <img
-            src={user?.avatar || profile}
-            alt={user?.fullname || "User"}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = profile;
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Rest of the profile card content */}
-      <div className="flex-1 min-w-0">
-        <h3 className="text-lg font-semibold text-gray-900 truncate">{user?.fullname}</h3>
-        <p className="text-sm text-gray-500 mb-1">@{user?.username}</p>
-
-        {user?.userType !== "user" && (
-          <div className="mt-2">
-            <span className="px-2 py-0.5 text-xs text-white bg-green-600 rounded-full uppercase">
-              {user?.userType}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="ml-4">
-        <button className="px-4 py-1 text-sm border border-green-600 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-colors">
-          Follow
-        </button>
-      </div>
-    </div>
-  );
 
   if (loading) return <Loading />
 
@@ -177,8 +148,13 @@ const ProfilePage = () => {
           </div>
 
           <div>
-            <button className="px-6 py-2 border border-green-600 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-colors shadow-sm">
-              Follow
+            <button onClick={toggleFollow}
+              className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
+                ${user.follow ?
+                  "hover:bg-white hover:text-green-600 bg-green-600 text-white"
+                  : " text-green-600 hover:bg-green-600 hover:text-white"}`}
+            >
+              {user.follow ? "Following" : "Follow"}
             </button>
           </div>
         </div>
@@ -199,8 +175,9 @@ const ProfilePage = () => {
           <button
             className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'bookmarks'
               ? 'border-green-600 text-green-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+              ${userId !== currentUser._id ? "hidden" : null}
+              `}
             onClick={() => setActiveTab('bookmarks')}
           >
             Bookmarks
@@ -229,66 +206,95 @@ const ProfilePage = () => {
       {/* User's Articles Tab Content */}
       {activeTab === 'articles' && (
         <div className="mb-12">
-          <div className="grid gap-4">
-            {userArticles.map(article => (
-              <div key={article._id} className="mb-4">
-                <ExploreArticleCard article={article} profile={true} />
+          {
+            userArticles.length > 0 ? (
+              <div className="grid gap-4">
+                {userArticles.map(article => (
+                  <div key={article._id} className="mb-4">
+                    <ExploreArticleCard article={article} profile={true} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              userId !== currentUser._id ? (
+                          <h2 className="flex justify-center text-2xl font-bold mb-6">{user.user.fullname} has not published any articles</h2>
+              ) : (
+                <Link to={"/publish"} className="flex justify-center text-2xl font-bold mb-6 text-emerald-600">Publish your first article!!</Link>
+              )
+            )
+          }
 
-          <div className="mt-8 text-center">
+          {/* <div className="mt-8 text-center">
             <Link to={`/user/${user.username}/articles`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
               View All Articles
             </Link>
-          </div>
+          </div> */}
         </div>
       )}
 
       {/* Bookmarks Tab Content */}
       {activeTab === 'bookmarks' && (
         <div className="mb-12">
-          <div className="grid gap-4">
-            {bookmarkedArticles.map(article => (
-              <div key={article._id} className="mb-4">
-                <ExploreArticleCard article={article} />
+          {
+            bookmarkedArticles.length > 0 ? (
+              <div className="grid gap-4">
+                {bookmarkedArticles.map(article => (
+                  <div key={article._id} className="mb-4">
+                    <ExploreArticleCard article={article} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <h2 className="flex justify-center text-2xl font-bold mb-6">
+                You don't have any bookmarks
+              </h2>
+            )
+          }
 
-          <div className="mt-8 text-center">
+          {/* <div className="mt-8 text-center">
             <Link to={`/user/${user.username}/bookmarks`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
               View All Bookmarks
             </Link>
-          </div>
+          </div> */}
         </div>
       )}
 
       {/* Following Tab Content */}
       {activeTab === 'following' && (
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Following</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {followingUsers.map(followingUser => renderProfileCard(followingUser))}
-          </div>
+          {
+            followingUsers.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {followingUsers.map(followingUser => <FollowCard user={followingUser} />)}
+              </div>
+            ) : (
+              <h2 className="flex justify-center text-2xl font-bold mb-6">You don't have any followers</h2>
+            )
+          }
 
-          {followingUsers.length > 4 && (
+          {/* {followingUsers.length > 4 && (
             <div className="mt-8 text-center">
               <button className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
                 Load More
               </button>
             </div>
-          )}
+          )} */}
         </div>
       )}
 
       {/* Followers Tab Content */}
       {activeTab === 'followers' && (
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Followers</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {followers.map(follower => renderProfileCard(follower))}
-          </div>
+          {
+            followers.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+
+                {followers.map(follower => <FollowCard user={follower} />)}
+              </div>
+            ) : (
+              <h2 className="flex justify-center text-2xl font-bold mb-6">You don't follow any accounts</h2>
+            )
+          }
 
           {followers.length > 4 && (
             <div className="mt-8 text-center">

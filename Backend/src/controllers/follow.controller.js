@@ -15,9 +15,9 @@ const toggleFollow = async (req, res) => {
     if (follow === null) {
         follow = await Follow.create({ follower: userId, following: followingId });
 
-        return res.status(200).json(new ApiResponse(200, follow, "User followed successfully"));
+        return res.status(200).json(new ApiResponse(201, true, "User followed successfully"));
     } else {
-        return res.status(200).json(new ApiResponse(200, null, "User unfollowed successfully"));
+        return res.status(200).json(new ApiResponse(200, false, "User unfollowed successfully"));
     }
 }
 

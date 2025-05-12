@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/auth/google", googleAuth);
 router.get("/logout", verifyUser, logout);
-router.get("/:userId", getUserStats);
+router.get("/:userId/:currentUser", getUserStats);
 
 export default router;

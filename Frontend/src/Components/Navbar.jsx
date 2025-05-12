@@ -78,10 +78,10 @@ function Navbar() {
                         )}
                     </nav>
 
-                    <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate(`/profile/${currentUser._id}`)}>
+                    <div className="flex items-center space-x-4 cursor-pointer">
                         {currentUser ? (
                             <div className="hidden md:flex items-center space-x-4">
-                                <div className="flex items-center max-w-64 line-clamp-1">
+                                <div className="flex items-center max-w-64 line-clamp-1" onClick={() => navigate(`/profile/${currentUser?._id}`)}>
                                     <img
                                         src={currentUser.avatar || '/default-avatar.png'}
                                         alt="User avatar"
@@ -180,7 +180,7 @@ function Navbar() {
                     <div className="px-4 pt-4 pb-3 border-t border-gray-200">
                         {currentUser ? (
                             <div>
-                                <div className="flex items-center mb-3 cursor-pointer" onClick={() => navigate(`/profile/${currentUser._id}`)}>
+                                <div className="flex items-center mb-3 cursor-pointer" onClick={() => navigate(`/profile/${currentUser?._id}`)}>
                                     <img
                                         src={currentUser.avatar || '/default-avatar.png'}
                                         alt="User avatar"
