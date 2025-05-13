@@ -2,6 +2,7 @@ import {
     publishArticle,
     deleteArticle,
     getArticleById,
+    approveArticle,
     getPendingArticles,
     searchArticles,
     trendingArticles,
@@ -17,6 +18,8 @@ const router = express.Router();
 router.post("/", verifyUser, publishArticle);
 router.delete("/:articleId", verifyUser, deleteArticle);
 router.get("/single/:articleId/:userId", getArticleById);
+router.put("/approve/:articleId", approveArticle);
+
 router.get("/pending", getPendingArticles);
 router.get("/trending", trendingArticles);
 router.get("/filtered", filteredArticles);

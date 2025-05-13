@@ -31,7 +31,7 @@ const publishArticle = async (req, res) => {
 
 const deleteArticle = async (req, res) => {
     try {
-        const { articleId } = req.param
+        const { articleId } = req.params
         if (!articleId) {
             return res.status(404).json(new ApiResponse(404, null, "Article ID not found."));
         }
@@ -39,11 +39,28 @@ const deleteArticle = async (req, res) => {
         const deletedArticle = await Article.findByIdAndDelete(articleId).select(" _id ")
         const confirm = deletedArticle ? true : false
 
-        return res.status(200).json(new ApiResponse(200, confirm, "Failed to delete article"));
+        return res.status(200).json(new ApiResponse(200, confirm, "Deleted article"));
 
     } catch (error) {
         return res.status(500).json(new ApiResponse(500, null, "Failed to delete article"));
     }
+}
+
+const approveArticle = async (req, res) => {
+    const { articleId } = req.params
+    const { status, reason } = req.body
+    if (!articleId) {
+        return res.status(400).json(new ApiResponse(400, null, "Article ID not found."));
+    }
+    let changes = { status }
+    if (reason) changes.reason = reason
+
+    const article = await Article.findByIdAndUpdate(articleId, changes, { new: true, select: "_id" })
+    if (!article) {
+        return res.status(404).json(new ApiResponse(404, null, "Failed to approve article"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, article, "Approved article"));
 }
 
 const getArticleById = async (req, res) => {
@@ -439,8 +456,8 @@ export {
     publishArticle,
     deleteArticle,
     getArticleById,
+    approveArticle,
     getPendingArticles,
-    getRandomArticles,
     trendingArticles,
     filteredArticles,
     userArticles,

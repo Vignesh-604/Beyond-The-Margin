@@ -46,7 +46,7 @@ export function TrendingArticleCard({ article }) {
 }
 
 // More to explore article card component
-export function ExploreArticleCard({ article, profile = false }) {
+export function ExploreArticleCard({ article, type = "" }) {
     return (
         <article className="flex flex-col border-b border-gray-200 pb-6">
             <div className="flex justify-between items-center text-xs mb-3">
@@ -57,7 +57,7 @@ export function ExploreArticleCard({ article, profile = false }) {
                     <span className="mx-2 text-gray-300">•</span>
                     <span className="text-gray-500">{dateFormat(article?.createdAt)}</span>
                 </div>
-                {profile && (
+                {type == "profile" && (
                     <span className="text-xs flex items-center text-gray-500">
                         <Clock className="h-3 w-3 mr-1" />
                         {article?.readTime} min read
@@ -65,7 +65,7 @@ export function ExploreArticleCard({ article, profile = false }) {
                 )}
             </div>
 
-            <Link to={`/articles/${article?._id}`} className="block mb-3">
+            <Link to={`/${type != "pending" ? "articles": "pending"}/${article?._id}`} className="block mb-3">
                 <h3 className="text-xl font-serif font-bold text-gray-900 hover:text-emerald-600 transition-colors">
                     {article?.title}
                 </h3>
@@ -75,7 +75,7 @@ export function ExploreArticleCard({ article, profile = false }) {
                 {article?.subtitle}
             </p>
 
-            {!profile && (
+            {!(type == "profile") && (
                 <div className="flex items-center justify-between mt-auto">
                     <AuthProtectedLink
                         to={`/profile/${article?.user?._id}`}

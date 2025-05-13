@@ -41,7 +41,7 @@ const googleAuth = async (req, res) => {
         const { email, name, given_name, picture } = googleUser.data;
 
         // Check if user exists
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email }).select("email fullname username userType userStatus")
 
         if (mode === "login") {
             if (!user) {
@@ -71,7 +71,7 @@ const googleAuth = async (req, res) => {
             email,
             fullname: name,
             avatar: picture,
-        });
+        }).select("email fullname username userType userStatus")
 
         const userData = CryptoJS.AES.encrypt(JSON.stringify(user), process.env.VITE_KEY).toString()
 

@@ -243,7 +243,7 @@ const ProfilePage = () => {
               <div className="grid gap-4">
                 {userArticles.map(article => (
                   <div key={article._id} className="mb-4">
-                    <ExploreArticleCard article={article} profile={true} />
+                    <ExploreArticleCard article={article} type={"profile"} />
                   </div>
                 ))}
               </div>
@@ -331,13 +331,13 @@ const ProfilePage = () => {
               </h2>)
           }
 
-          {followers.length > 4 && (
+          {/* {followers.length > 4 && (
             <div className="mt-8 text-center">
               <button className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
                 Load More
               </button>
             </div>
-          )}
+          )} */}
         </div>
       )}
 
@@ -348,7 +348,7 @@ const ProfilePage = () => {
               <div className="grid gap-4">
                 {pendingArticles.map(article => (
                   <div key={article._id} className="mb-4">
-                    <ExploreArticleCard article={article} />
+                    <ExploreArticleCard article={article} type={"pending"} />
                   </div>
                 ))}
               </div>

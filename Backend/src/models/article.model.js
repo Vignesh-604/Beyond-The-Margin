@@ -37,6 +37,7 @@ const articleSchema = new Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
+  reason: String
 }, { timestamps: true });
 
 const Article = model('Article', articleSchema);

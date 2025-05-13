@@ -9,6 +9,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
 import AuthProtectedLink from '../../Components/AuthLink';
+import Swal from 'sweetalert2';
 
 export default function ArticlePage() {
   const [article, setArticle] = useState({});
@@ -220,6 +221,17 @@ export default function ArticlePage() {
       })
   }
 
+  const rejectionReason = () => {
+    Swal.fire({
+      icon: 'error',
+      title: "Article Rejected",
+      text: undefined,
+      html: `<b>Reason:</b><br>${article.reason}`,
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3085d6"
+    });
+  }
+
   if (loading) return <Loading />
 
   const totalComments = comments.reduce((count, comment) => count + 1 + (comment.replies ? comment.replies.length : 0), 0);
@@ -241,6 +253,16 @@ export default function ArticlePage() {
                 <span>{dateFormat(article.createdAt)}</span>
                 <span className="mx-2">•</span>
                 <span>{article.readTime} min read</span>
+                {article.status !== "approved" && (
+                  <>
+                    <span className="mx-2">•</span>
+                    <span onClick={article.status == "rejected" && rejectionReason}
+                      className={`inline-block ${article.status == "pending" ? "bg-yellow-500 text-gray-800" : "bg-red-500 text-white cursor-pointer"} capitalize px-3 py-1 text-sm font-semibold rounded-full mb-4`}
+                    >
+                      {article.status}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{article.title}</h1>
@@ -311,17 +333,17 @@ export default function ArticlePage() {
               </button>
             </div>
           ) : (
-          <div className='w-full flex justify-center'>
-            <AuthProtectedLink
-              to="/"
-              className="bg-emerald-600 text-white p-3 m-4 rounded-lg shadow-lg"
-              title="Join Our Community"
-              message="Please log in to interact with this article."
-            >
-              Sign up or Login to interact with the article
+            <div className='w-full flex justify-center'>
+              <AuthProtectedLink
+                to="/"
+                className="bg-emerald-600 text-white p-3 m-4 rounded-lg shadow-lg"
+                title="Join Our Community"
+                message="Please log in to interact with this article."
+              >
+                Sign up or Login to interact with the article
 
-            </AuthProtectedLink>
-          </div>
+              </AuthProtectedLink>
+            </div>
           )}
 
           {/* Comment Section */}

@@ -4,6 +4,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Utils/context';
 import axios from 'axios';
 import AuthProtectedLink from './AuthLink';
+import logo from "../Assets/Logo.png"
+import profile from "../Assets/Profile.png"
 
 function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,7 +27,7 @@ function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
                     <div className="flex items-center">
-                        <BookOpen className="h-8 w-8 text-emerald-600" />
+                        <img src={logo} className="h-16 w-16 text-emerald-600" />
                         <span className="ml-2 text-xl font-serif font-bold text-gray-900">Beyond The Margin</span>
                     </div>
 
@@ -83,9 +85,9 @@ function Navbar() {
                             <div className="hidden md:flex items-center space-x-4">
                                 <div className="flex items-center max-w-64 line-clamp-1" onClick={() => navigate(`/profile/${currentUser?._id}`)}>
                                     <img
-                                        src={currentUser.avatar || '/default-avatar.png'}
+                                        src={currentUser.avatar || profile}
                                         alt="User avatar"
-                                        className="h-8 w-8 rounded-full mr-2"
+                                        className="h-10 main-w-10 rounded-full mr-2"
                                     />
                                     <span className="text-sm font-medium">Hello, <br /> {currentUser.fullname}</span>
                                 </div>
