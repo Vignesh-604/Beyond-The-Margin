@@ -82,8 +82,7 @@ export default function ArticlesList() {
     fetchArticles();
   };
 
-  // No need for client-side filtering since the API handles it
-  const filteredArticles = articles;
+  const filteredArticles = articles || []
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

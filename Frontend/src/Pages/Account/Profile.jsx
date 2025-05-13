@@ -15,11 +15,15 @@ const ProfilePage = () => {
   const [bookmarkedArticles, setBookmarkedArticles] = useState([])
   const [followingUsers, setFollowingUsers] = useState([])
   const [followers, setFollowers] = useState([])
+  const [pendingArticles, setPendingArticles] = useState([])
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const p = useParams()
   const userId = p.userId ? p.userId : currentUser?._id
+
+  const role = user?.user?.userType || ""
+  const owner = userId == currentUser?._id
 
   useEffect(() => {
     if (!currentUser) navigate(-1)
@@ -63,8 +67,6 @@ const ProfilePage = () => {
           .then((res) => {
             const data = res.data.data
             setFollowers(data)
-            console.log(data);
-
           })
           .catch(e => {
             console.log(e);
@@ -75,6 +77,16 @@ const ProfilePage = () => {
           .then((res) => {
             const data = res.data.data
             setFollowingUsers(data)
+          })
+          .catch(e => {
+            console.log(e);
+          })
+        break;
+      case "pending":
+        axios.get(`/api/articles/pending`)
+          .then((res) => {
+            const data = res.data.data
+            setPendingArticles(data)
           })
           .catch(e => {
             console.log(e);
@@ -116,13 +128,20 @@ const ProfilePage = () => {
               <p className="text-gray-700 mb-4 max-w-2xl">{user.user?.about}</p>
             )}
 
+            {/* User Stats row */}
             <div className="flex items-center space-x-6 text-sm">
-              <Link to={`/user/${user.user?.username}/articles`} className="flex items-center">
+              <button
+                onClick={() => setActiveTab('articles')}
+                className="flex items-center"
+              >
                 <span className="font-semibold mr-1">{user.articles}</span> Articles
-              </Link>
-              <Link to={`/user/${user.user?.username}/bookmarks`} className="flex items-center">
+              </button>
+              <button
+                onClick={userId == currentUser._id && (() => setActiveTab('bookmarks'))}
+                className="flex items-center"
+              >
                 <span className="font-semibold mr-1">{user.bookmarks}</span> Bookmarks
-              </Link>
+              </button>
               <button
                 onClick={() => setActiveTab('following')}
                 className="flex items-center"
@@ -138,9 +157,11 @@ const ProfilePage = () => {
             </div>
 
             <div className="mt-3 flex items-center gap-3">
-              {user.user?.userType !== "user" && (
-                <span className="px-3 py-1 text-xs text-white bg-green-600 rounded-full uppercase">
-                  {user.user?.userType}
+              {role !== "user" && (
+                <span className={`px-3 py-1 text-sm font-semibold rounded-full uppercase border
+                  ${role == "admin" ? " text-white bg-green-600" : "text-green-600 border-green-600"}`}
+                >
+                  {role}
                 </span>
               )}
               <span className="text-sm text-gray-500">Member since {dateFormat(user.user?.createdAt)}</span>
@@ -161,7 +182,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="flex justify-between border-b border-gray-200 mb-6">
         <nav className="flex space-x-8">
           <button
             className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'articles'
@@ -176,7 +197,7 @@ const ProfilePage = () => {
             className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'bookmarks'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
-              ${userId !== currentUser._id ? "hidden" : null}
+              ${!owner && "hidden"}
               `}
             onClick={() => setActiveTab('bookmarks')}
           >
@@ -201,6 +222,17 @@ const ProfilePage = () => {
             Followers
           </button>
         </nav>
+        <nav className={`flex space-x-8 ${!((role !== "user") && owner) && "hidden"}`}>
+          <button
+            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'pending'
+              ? 'border-green-600 text-green-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pending
+          </button>
+        </nav>
       </div>
 
       {/* User's Articles Tab Content */}
@@ -216,8 +248,8 @@ const ProfilePage = () => {
                 ))}
               </div>
             ) : (
-              userId !== currentUser._id ? (
-                          <h2 className="flex justify-center text-2xl font-bold mb-6">{user.user.fullname} has not published any articles</h2>
+              !owner ? (
+                <h2 className="flex justify-center text-2xl font-bold mb-6">{user.user.fullname} has not published any articles</h2>
               ) : (
                 <Link to={"/publish"} className="flex justify-center text-2xl font-bold mb-6 text-emerald-600">Publish your first article!!</Link>
               )
@@ -268,7 +300,9 @@ const ProfilePage = () => {
                 {followingUsers.map(followingUser => <FollowCard user={followingUser} />)}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">You don't have any followers</h2>
+              <h2 className="flex justify-center text-2xl font-bold mb-6">
+                {owner ? "You don't" : user.user.fullname + " doesn't "} follow any accounts
+              </h2>
             )
           }
 
@@ -292,8 +326,9 @@ const ProfilePage = () => {
                 {followers.map(follower => <FollowCard user={follower} />)}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">You don't follow any accounts</h2>
-            )
+              <h2 className="flex justify-center text-2xl font-bold mb-6">
+                {owner ? "You don't" : user.user.fullname + " doesn't "} have any followers
+              </h2>)
           }
 
           {followers.length > 4 && (
@@ -303,6 +338,32 @@ const ProfilePage = () => {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'pending' && (
+        <div className="mb-12">
+          {
+            pendingArticles.length > 0 ? (
+              <div className="grid gap-4">
+                {pendingArticles.map(article => (
+                  <div key={article._id} className="mb-4">
+                    <ExploreArticleCard article={article} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <h2 className="flex justify-center text-2xl font-bold mb-6">
+                You don't have any pending
+              </h2>
+            )
+          }
+
+          {/* <div className="mt-8 text-center">
+            <Link to={`/user/${user.username}/pending`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
+              View All pending
+            </Link>
+          </div> */}
         </div>
       )}
     </div>

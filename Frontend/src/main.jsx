@@ -10,6 +10,7 @@ import NotFound from "./Pages/NotFound";
 import ProfilePage from "./Pages/Account/Profile";
 import EditorPage from './Pages/Articles/Editor.jsx';
 import ArticlesList from './Pages/Articles/ArticlesList.jsx';
+import AboutPage from './Pages/About.jsx';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
             <Route path="/articles" element={<ArticlesList />} />
             <Route path="/articles/:articleId" element={<ArticlePage />} />
             <Route path="/publish" element={<EditorPage />} />
+            <Route path="/about" element={<AboutPage />} />
             {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
     ))

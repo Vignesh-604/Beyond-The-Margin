@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import Article from "../models/article.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import User from "../models/user.model.js";
 import Interaction from "../models/interaction.model.js";
+import Follow from "../models/follow.model.js";
 
 const publishArticle = async (req, res) => {
     try {
@@ -83,11 +83,12 @@ const getArticleById = async (req, res) => {
     const [likeCount, dislikeCount] = await Promise.all([
         // Interaction.countDocuments({ article: articleId, type: "bookmark" }),
         Interaction.countDocuments({ article: articleId, type: "like" }),
-        Interaction.countDocuments({ article: articleId, type: "dislike" })
+        Interaction.countDocuments({ article: articleId, type: "dislike" }),
+
     ]);
 
     const fullArticle = {
-        ...article[0],
+        ...article[0], follow: false,
         isBookmarked: false,
         likeCount, isLiked: false,
         dislikeCount, isDisliked: false
@@ -101,6 +102,8 @@ const getArticleById = async (req, res) => {
             if (interaction.type === "like") fullArticle.isLiked = true;
             if (interaction.type === "dislike") fullArticle.isDisliked = true;
         });
+
+        fullArticle.follow = await Follow.countDocuments({ follower: userId, following: fullArticle.user._id }) ? true : false
     }
 
     return res.status(200).json(new ApiResponse(200, fullArticle, "Fetched article"));
@@ -130,64 +133,12 @@ const getPendingArticles = async (req, res) => {
                 }
             },
             { $unwind: "$user" },
-            {
-                $project: {
-                    title: 1,
-                    content: 1,
-                    category: 1,
-                    subCategory: 1,
-                    createdAt: 1,
-                    status: 1,
-                    user: 1
-                }
-            }
+            { $project: { updatedAt: 0, content: 0 } }
         ])
 
         return res.status(200).json(new ApiResponse(200, articles, "Pending articles fetched"));
     } catch (err) {
         return res.status(500).json(new ApiResponse(500, null, "Failed to fetch pending articles"));
-    }
-};
-
-const getRandomArticles = async (req, res) => {
-    try {
-        const articles = await Article.aggregate([
-            { $match: { status: "approved" } },
-            { $sample: { size: 10 } },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "user",
-                    foreignField: "_id",
-                    as: "user",
-                    pipeline: [
-                        {
-                            $project: {
-                                fullname: 1,
-                                username: 1,
-                                avatar: 1,
-                            },
-                        },
-                    ],
-                },
-            },
-            { $unwind: "$user" },
-            {
-                $project: {
-                    title: 1,
-                    content: 1,
-                    category: 1,
-                    subCategory: 1,
-                    createdAt: 1,
-                    status: 1,
-                    user: 1,
-                },
-            },
-        ]);
-
-        return res.status(200).json(new ApiResponse(200, articles, "Random articles fetched"));
-    } catch (err) {
-        return res.status(500).json(new ApiResponse(500, null, "Failed to fetch random articles"));
     }
 };
 

@@ -3,7 +3,6 @@ import {
     deleteArticle,
     getArticleById,
     getPendingArticles,
-    getRandomArticles,
     searchArticles,
     trendingArticles,
     filteredArticles,
@@ -19,7 +18,6 @@ router.post("/", verifyUser, publishArticle);
 router.delete("/:articleId", verifyUser, deleteArticle);
 router.get("/single/:articleId/:userId", getArticleById);
 router.get("/pending", getPendingArticles);
-router.get("/random", getRandomArticles);
 router.get("/trending", trendingArticles);
 router.get("/filtered", filteredArticles);
 router.get("/user/:userId", userArticles);

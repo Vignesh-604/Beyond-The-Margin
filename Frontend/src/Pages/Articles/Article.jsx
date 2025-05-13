@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { TrendingArticleCard } from '../../Components/ArticleCards';
 import { ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
 import Loading from '../../Components/Loading';
 import axios from 'axios';
 import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
-import { useOutletContext, useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
+import AuthProtectedLink from '../../Components/AuthLink';
 
 export default function ArticlePage() {
   const [article, setArticle] = useState({});
@@ -20,12 +20,11 @@ export default function ArticlePage() {
   const [commentsLoading, setCommentsLoading] = useState(true);
 
   const { currentUser } = useAuth()
-  const navigate = useNavigate();
   const p = useParams()
   const articleId = p.articleId
 
   useEffect(() => {
-    axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser?._id : false}`)
+    axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser._id : false}`)
       .then(res => {
         const data = res.data.data;
         setArticle(data);
@@ -213,6 +212,14 @@ export default function ArticlePage() {
     setReplyText("");
   };
 
+  const toggleFollow = () => {
+    axios.post(`/api/follows/${article.user._id}`)
+      .then(res => {
+        const data = res.data.data
+        setArticle({ ...article, follow: data })
+      })
+  }
+
   if (loading) return <Loading />
 
   const totalComments = comments.reduce((count, comment) => count + 1 + (comment.replies ? comment.replies.length : 0), 0);
@@ -250,8 +257,14 @@ export default function ArticlePage() {
                 </div>
               </Link>
 
-              <button className=" border border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white font-semibold px-4 py-2 my-4 rounded-xl text-lg transition-colors">
-                Follow
+              <button onClick={toggleFollow}
+                className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
+                ${article.follow ?
+                    "hover:bg-white hover:text-green-600 bg-green-600 text-white"
+                    : " text-green-600 hover:bg-green-600 hover:text-white"}
+                    ${!currentUser && "hidden"}
+                    `}>
+                {article.follow ? "Following" : "Follow"}
               </button>
             </div>
           </div>
@@ -298,9 +311,17 @@ export default function ArticlePage() {
               </button>
             </div>
           ) : (
-            <button className="bg-emerald-600 text-white p-3 m-4 rounded-lg shadow-lg" onClick={() => navigate('/login')}>
+          <div className='w-full flex justify-center'>
+            <AuthProtectedLink
+              to="/"
+              className="bg-emerald-600 text-white p-3 m-4 rounded-lg shadow-lg"
+              title="Join Our Community"
+              message="Please log in to interact with this article."
+            >
               Sign up or Login to interact with the article
-            </button>
+
+            </AuthProtectedLink>
+          </div>
           )}
 
           {/* Comment Section */}
