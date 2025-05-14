@@ -24,7 +24,7 @@ const router = createBrowserRouter(
             <Route path="/publish" element={<EditorPage />} />
             <Route path="/pending/:articleId" element={<PendingArticle />} />
             <Route path="/about" element={<AboutPage />} />
-            {/* <Route path="*" element={<NotFound />} /> */}
+            <Route path="*" element={<NotFound />} />
         </Route>
     ))
 

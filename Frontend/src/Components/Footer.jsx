@@ -1,77 +1,118 @@
 import React from 'react'
-import { BookOpen } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import { useAuth } from '../Utils/context';
+import AuthProtectedLink from './AuthLink';
+import logo from "../Assets/Logo.png"
 
 function Footer() {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  
   return (
-    <footer className="bg-gray-100 border-t border-gray-200 py-12">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div className="md:col-span-2">
-          <div className="flex items-center">
-            <BookOpen className="h-6 w-6 text-emerald-600" />
-            <span className="ml-2 text-lg font-serif font-bold text-gray-900">Beyond The Margin</span>
+    <footer className="bg-gray-100 border-t border-gray-200 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Logo and description */}
+          <div className="md:col-span-1">
+            <div className="flex items-center">
+              <img src={logo} className="h-12 w-12 text-emerald-600" alt="Beyond The Margin" />
+              <span className="ml-2 text-lg font-serif font-bold text-gray-900">Beyond The Margin</span>
+            </div>
+            <p className="mt-4 text-gray-600 max-w-md">
+              A platform dedicated to thoughtful journalism, in-depth analysis, and meaningful conversations.
+            </p>
           </div>
-          <p className="mt-4 text-gray-600 max-w-md">
-            A platform dedicated to thoughtful journalism, in-depth analysis, and meaningful conversations.
-            We believe in the power of words to inspire change and foster understanding.
-          </p>
-          <div className="mt-6 flex space-x-6">
-            <a href="#" className="text-gray-400 hover:text-emerald-600">
-              Twitter
-            </a>
-            <a href="#" className="text-gray-400 hover:text-emerald-600">
-              Facebook
-            </a>
-            <a href="#" className="text-gray-400 hover:text-emerald-600">
-              Instagram
-            </a>
-            <a href="#" className="text-gray-400 hover:text-emerald-600">
-              LinkedIn
-            </a>
+
+          {/* Navigation links - using the same as navbar */}
+          <div className="md:col-span-2">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Navigation</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <ul className="space-y-3">
+                  <li>
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-emerald-600 font-medium"
+                          : "text-gray-600 hover:text-emerald-600"
+                      }
+                    >
+                      Home
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/articles"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-emerald-600 font-medium"
+                          : "text-gray-600 hover:text-emerald-600"
+                      }
+                    >
+                      Articles
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/about"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-emerald-600 font-medium"
+                          : "text-gray-600 hover:text-emerald-600"
+                      }
+                    >
+                      About Us
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <ul className="space-y-3">
+                  {currentUser && (
+                    <li>
+                      <NavLink
+                        to="/publish"
+                        className={({ isActive }) =>
+                          isActive
+                            ? "text-emerald-600 font-medium"
+                            : "text-gray-600 hover:text-emerald-600"
+                        }
+                      >
+                        Publish
+                      </NavLink>
+                    </li>
+                  )}
+                  {!currentUser && (
+                    <li>
+                      <AuthProtectedLink
+                        to="/"
+                        className="text-gray-600 hover:text-emerald-600"
+                        title="Join Our Community"
+                        message="Please log in to view this author's profile and discover more of their content."
+                      >
+                        Get Started
+                      </AuthProtectedLink>
+                    </li>
+                  )}
+                  {currentUser && (
+                    <li>
+                      <div 
+                        className="text-gray-600 hover:text-emerald-600 cursor-pointer"
+                        onClick={() => navigate(`/profile/${currentUser?._id}`)}
+                      >
+                        My Profile
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Explore</h3>
-          <ul className="space-y-3">
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Home</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Discover</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Writers</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Categories</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Community</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Company</h3>
-          <ul className="space-y-3">
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">About Us</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Our Mission</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Careers</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Contact Us</a></li>
-            <li><a href="#" className="text-gray-600 hover:text-emerald-600">Submit Article</a></li>
-          </ul>
         </div>
       </div>
-
-      <div className="border-t border-gray-200 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p className="text-sm text-gray-500">
-          © 2025 Beyond The Margin. All rights reserved.
-        </p>
-        <div className="mt-4 md:mt-0 flex space-x-8">
-          <a href="#" className="text-sm text-gray-500 hover:text-emerald-600">
-            Privacy Policy
-          </a>
-          <a href="#" className="text-sm text-gray-500 hover:text-emerald-600">
-            Terms of Service
-          </a>
-          <a href="#" className="text-sm text-gray-500 hover:text-emerald-600">
-            Cookie Policy
-          </a>
-        </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
   )
 }
 

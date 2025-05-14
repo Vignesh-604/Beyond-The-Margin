@@ -5,7 +5,7 @@ import axios from 'axios';
 import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
 import AuthProtectedLink from '../../Components/AuthLink';
@@ -23,6 +23,7 @@ export default function ArticlePage() {
   const { currentUser } = useAuth()
   const p = useParams()
   const articleId = p.articleId
+  const owner = currentUser._id === article?.user?._id
 
   useEffect(() => {
     axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser._id : false}`)
@@ -278,16 +279,17 @@ export default function ArticlePage() {
                   </div>
                 </div>
               </Link>
-
-              <button onClick={toggleFollow}
-                className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
+              {!owner && (
+                <button onClick={toggleFollow}
+                  className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
                 ${article.follow ?
-                    "hover:bg-white hover:text-green-600 bg-green-600 text-white"
-                    : " text-green-600 hover:bg-green-600 hover:text-white"}
+                      "hover:bg-white hover:text-green-600 bg-green-600 text-white"
+                      : " text-green-600 hover:bg-green-600 hover:text-white"}
                     ${!currentUser && "hidden"}
                     `}>
-                {article.follow ? "Following" : "Follow"}
-              </button>
+                  {article.follow ? "Following" : "Follow"}
+                </button>
+              )}
             </div>
           </div>
 

@@ -59,7 +59,7 @@ export default function LoginPopup({ isOpen, onClose, message, title = "Login Re
 
     return (
         <div
-            className={`fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 transition-opacity duration-300 
+            className={`fixed inset-0 flex items-center cursor-default justify-center z-50 bg-black bg-opacity-70 transition-opacity duration-300 
                 ${closing ? "opacity-0" : "opacity-100"}`}
             onClick={handleOutsideClick}
         >
@@ -85,7 +85,7 @@ export default function LoginPopup({ isOpen, onClose, message, title = "Login Re
 
                     <h2 className="text-3xl font-bold mb-4">{title}</h2>
 
-                    <p className="text-gray-300 mb-8">
+                    <p className="text-gray-200 mb-8 font-semibold">
                         {message || "Please log in to access this content and join our community of writers and readers."}
                     </p>
 

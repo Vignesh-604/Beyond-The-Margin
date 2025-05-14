@@ -167,17 +167,18 @@ const ProfilePage = () => {
               <span className="text-sm text-gray-500">Member since {dateFormat(user.user?.createdAt)}</span>
             </div>
           </div>
-
-          <div>
-            <button onClick={toggleFollow}
-              className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
+          {
+            !owner && (
+              <button onClick={toggleFollow}
+                className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
                 ${user.follow ?
-                  "hover:bg-white hover:text-green-600 bg-green-600 text-white"
-                  : " text-green-600 hover:bg-green-600 hover:text-white"}`}
-            >
-              {user.follow ? "Following" : "Follow"}
-            </button>
-          </div>
+                    "hover:bg-white hover:text-green-600 bg-green-600 text-white"
+                    : " text-green-600 hover:bg-green-600 hover:text-white"}`}
+              >
+                {user.follow ? "Following" : "Follow"}
+              </button>
+            )
+          }
         </div>
       </div>
 
