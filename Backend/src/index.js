@@ -36,9 +36,11 @@ import articleRoutes from './routes/article.route.js'
 import commentRoutes from './routes/comment.route.js'
 import interactionRoutes from './routes/interaction.route.js'
 import followRoutes from './routes/follow.route.js'
+import aboutRoutes from './routes/about.route.js'
 
 app.use("/api/users", userRoutes)
 app.use("/api/articles", articleRoutes)
 app.use("/api/comments", commentRoutes)
 app.use("/api/interactions", interactionRoutes)
 app.use("/api/follows", followRoutes)
+app.use("/api/about", aboutRoutes)
