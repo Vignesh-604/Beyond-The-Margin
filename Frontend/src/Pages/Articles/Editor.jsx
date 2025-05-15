@@ -117,7 +117,7 @@ const MarkdownEditor = () => {
             subCategory: selectedSubcategory
         };
 
-        axios.post('/api/articles/', formData)
+        axios.post('/api/articles', formData)
             .then(res => {
                 const articleId = res.data.data._id;
                 showSuccessAlert(
@@ -205,8 +205,8 @@ const MarkdownEditor = () => {
                     disabled={!formValid}
                     className={`px-4 py-2 rounded-md w-full md:w-auto transition-colors ${
                         formValid 
-                            ? 'bg-black text-white hover:bg-gray-800' 
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-green-600 text-white hover:bg-green-700' 
+                            : 'bg-gray-700 text-gray-300 cursor-not-allowed'
                     }`}
                 >
                     Submit for approval

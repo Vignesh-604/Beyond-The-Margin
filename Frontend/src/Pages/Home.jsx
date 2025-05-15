@@ -47,29 +47,31 @@ export default function HomePage() {
       {/* Main content */}
       <main>
         {/* Hero featured article */}
-        <section className="py-6 border-b border-gray-200">
+        {/* Hero featured article - Modified for better responsiveness */}
+        <section className="py-4 border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-              <div className="flex flex-col space-y-4">
-                <div className="flex items-center text-sm">
-                  <span className="uppercase tracking-wider font-medium bg-emerald-600 rounded-lg p-1 text-white">Featured Story</span>
-                  <span className="mx-2 text-gray-300">•</span>
-                  <span className="uppercase tracking-wider font-medium text-emerald-600">{trending[0]?.category}</span>
-                  <span className="mx-2 text-gray-300">•</span>
-                  <span className="uppercase tracking-wider font-medium text-emerald-600">{trending[0]?.subCategory}</span>
-                  <span className="mx-2 text-gray-300">•</span>
-                  <span className="text-gray-500">{dateFormat(trending[0]?.createdAt)}</span>
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-wrap items-center text-xs sm:text-sm gap-2">
+                  <span className="uppercase tracking-wider font-medium bg-emerald-600 rounded-lg px-2 py-1 text-white text-xs">Featured Story</span>
+                  <div className="flex items-center flex-wrap">
+                    <span className="uppercase tracking-wider font-medium text-emerald-600">{trending[0]?.category}</span>
+                    <span className="mx-2 text-gray-300 hidden sm:inline">•</span>
+                    <span className="uppercase tracking-wider font-medium text-emerald-600 hidden sm:inline">{trending[0]?.subCategory}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="text-gray-500">{dateFormat(trending[0]?.createdAt)}</span>
+                  </div>
                 </div>
 
-                <Link to={`/articles/${trending[0]?._id}`} className="text-4xl font-serif font-bold text-gray-900 hover:text-emerald-600 leading-tight">
+                <Link to={`/articles/${trending[0]?._id}`} className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-gray-900 hover:text-emerald-600 leading-tight">
                   {trending[0]?.title}
                 </Link>
 
-                <p className="text-xl text-gray-600 leading-relaxed">
+                <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
                   {trending[0]?.subtitle}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center justify-between pt-3 border-t">
                   <AuthProtectedLink
                     to={`/profile/${trending[0]?.user?._id}`}
                     className="flex items-center gap-2"
@@ -78,13 +80,13 @@ export default function HomePage() {
                   >
                     <img
                       src={trending[0]?.user.avatar}
-                      className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
+                      className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium" />
 
-                    <p className="text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-900">{trending[0]?.user.fullname}</p>
                   </AuthProtectedLink>
 
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock className="h-4 w-4 mr-1" />
+                  <div className="flex items-center text-xs sm:text-sm text-gray-500">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                     {trending[0]?.readTime} min read
                   </div>
                 </div>

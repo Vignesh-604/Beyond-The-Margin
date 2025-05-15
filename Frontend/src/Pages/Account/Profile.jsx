@@ -111,25 +111,24 @@ const ProfilePage = () => {
   if (loading) return <Loading />
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-gray-50">
-
+    <div className="max-w-6xl mx-auto px-4 py-6 bg-gray-50">
       {/* Profile Header with User Card */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
-          <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-md flex-shrink-0">
             <img src={user.user?.avatar} alt={user.user?.fullname} className="w-full h-full object-cover" />
           </div>
 
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2 text-gray-800">{user.user?.fullname}</h1>
-            <p className="text-gray-600 mb-3">@{user.user?.username}</p>
+          <div className="flex-1 text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-gray-800">{user.user?.fullname}</h1>
+            <p className="text-gray-600 mb-2 sm:mb-3">@{user.user?.username}</p>
 
             {user.user?.about && (
-              <p className="text-gray-700 mb-4 max-w-2xl">{user.user?.about}</p>
+              <p className="text-gray-700 mb-3 sm:mb-4 max-w-2xl">{user.user?.about}</p>
             )}
 
             {/* User Stats row */}
-            <div className="flex items-center space-x-6 text-sm">
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 sm:gap-6 text-sm">
               <button
                 onClick={() => setActiveTab('articles')}
                 className="flex items-center"
@@ -137,7 +136,7 @@ const ProfilePage = () => {
                 <span className="font-semibold mr-1">{user.articles}</span> Articles
               </button>
               <button
-                onClick={userId == currentUser._id && (() => setActiveTab('bookmarks'))}
+                onClick={userId == currentUser._id ? (() => setActiveTab('bookmarks')) : undefined}
                 className="flex items-center"
               >
                 <span className="font-semibold mr-1">{user.bookmarks}</span> Bookmarks
@@ -156,7 +155,7 @@ const ProfilePage = () => {
               </button>
             </div>
 
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex flex-wrap justify-center sm:justify-start items-center gap-3">
               {role !== "user" && (
                 <span className={`px-3 py-1 text-sm font-semibold rounded-full uppercase border
                   ${role == "admin" ? " text-white bg-green-600" : "text-green-600 border-green-600"}`}
@@ -170,7 +169,7 @@ const ProfilePage = () => {
           {
             !owner && (
               <button onClick={toggleFollow}
-                className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
+                className={`px-6 py-2 mt-3 sm:mt-0 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
                 ${user.follow ?
                     "hover:bg-white hover:text-green-600 bg-green-600 text-white"
                     : " text-green-600 hover:bg-green-600 hover:text-white"}`}
@@ -183,10 +182,10 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Tabs */}
-      <div className="flex justify-between border-b border-gray-200 mb-6">
-        <nav className="flex space-x-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 mb-6 overflow-x-auto">
+        <nav className="flex space-x-4 sm:space-x-8">
           <button
-            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'articles'
+            className={`px-1 py-3 sm:py-4 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${activeTab === 'articles'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -195,7 +194,7 @@ const ProfilePage = () => {
             Articles
           </button>
           <button
-            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'bookmarks'
+            className={`px-1 py-3 sm:py-4 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${activeTab === 'bookmarks'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
               ${!owner && "hidden"}
@@ -205,7 +204,7 @@ const ProfilePage = () => {
             Bookmarks
           </button>
           <button
-            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'following'
+            className={`px-1 py-3 sm:py-4 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${activeTab === 'following'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -214,7 +213,7 @@ const ProfilePage = () => {
             Following
           </button>
           <button
-            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'followers'
+            className={`px-1 py-3 sm:py-4 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${activeTab === 'followers'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -223,9 +222,9 @@ const ProfilePage = () => {
             Followers
           </button>
         </nav>
-        <nav className={`flex space-x-8 ${!((role !== "user") && owner) && "hidden"}`}>
+        <nav className={`flex space-x-4 sm:space-x-8 ${!((role !== "user") && owner) && "hidden"}`}>
           <button
-            className={`px-1 py-4 border-b-2 font-medium ${activeTab === 'pending'
+            className={`px-1 py-3 sm:py-4 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${activeTab === 'pending'
               ? 'border-green-600 text-green-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -250,18 +249,12 @@ const ProfilePage = () => {
               </div>
             ) : (
               !owner ? (
-                <h2 className="flex justify-center text-2xl font-bold mb-6">{user.user.fullname} has not published any articles</h2>
+                <h2 className="flex justify-center text-xl sm:text-2xl font-bold mb-6">{user.user.fullname} has not published any articles</h2>
               ) : (
-                <Link to={"/publish"} className="flex justify-center text-2xl font-bold mb-6 text-emerald-600">Publish your first article!!</Link>
+                <Link to={"/publish"} className="flex justify-center text-xl sm:text-2xl font-bold mb-6 text-emerald-600">Publish your first article!!</Link>
               )
             )
           }
-
-          {/* <div className="mt-8 text-center">
-            <Link to={`/user/${user.username}/articles`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
-              View All Articles
-            </Link>
-          </div> */}
         </div>
       )}
 
@@ -278,17 +271,11 @@ const ProfilePage = () => {
                 ))}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">
+              <h2 className="flex justify-center text-xl sm:text-2xl font-bold mb-6">
                 You don't have any bookmarks
               </h2>
             )
           }
-
-          {/* <div className="mt-8 text-center">
-            <Link to={`/user/${user.username}/bookmarks`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
-              View All Bookmarks
-            </Link>
-          </div> */}
         </div>
       )}
 
@@ -301,19 +288,11 @@ const ProfilePage = () => {
                 {followingUsers.map(followingUser => <FollowCard user={followingUser} />)}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">
+              <h2 className="flex justify-center text-xl sm:text-2xl font-bold mb-6">
                 {owner ? "You don't" : user.user.fullname + " doesn't "} follow any accounts
               </h2>
             )
           }
-
-          {/* {followingUsers.length > 4 && (
-            <div className="mt-8 text-center">
-              <button className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
-                Load More
-              </button>
-            </div>
-          )} */}
         </div>
       )}
 
@@ -323,22 +302,13 @@ const ProfilePage = () => {
           {
             followers.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
-
                 {followers.map(follower => <FollowCard user={follower} />)}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">
+              <h2 className="flex justify-center text-xl sm:text-2xl font-bold mb-6">
                 {owner ? "You don't" : user.user.fullname + " doesn't "} have any followers
               </h2>)
           }
-
-          {/* {followers.length > 4 && (
-            <div className="mt-8 text-center">
-              <button className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
-                Load More
-              </button>
-            </div>
-          )} */}
         </div>
       )}
 
@@ -354,17 +324,11 @@ const ProfilePage = () => {
                 ))}
               </div>
             ) : (
-              <h2 className="flex justify-center text-2xl font-bold mb-6">
+              <h2 className="flex justify-center text-xl sm:text-2xl font-bold mb-6">
                 You don't have any pending
               </h2>
             )
           }
-
-          {/* <div className="mt-8 text-center">
-            <Link to={`/user/${user.username}/pending`} className="px-6 py-2 bg-white shadow-sm text-gray-700 rounded-full hover:bg-gray-100 transition-colors">
-              View All pending
-            </Link>
-          </div> */}
         </div>
       )}
     </div>

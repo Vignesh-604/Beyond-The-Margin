@@ -243,22 +243,22 @@ export default function ArticlePage() {
       <main className="container mx-auto px-4 md:px-6 py-8">
         <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
           {/* Article Header */}
-          <div className="p-6 border-b bg-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="inline-block bg-emerald-300 text-gray-800 px-3 py-1 text-sm font-semibold rounded-full mb-4">{article.category}</span>
-                <span className="mx-2">{">"}</span>
-                <span className="inline-block bg-emerald-300 text-gray-800 px-3 py-1 text-sm font-semibold rounded-full mb-4">{article.subCategory}</span>
+          <div className="p-4 sm:p-6 border-b bg-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-block bg-emerald-300 text-gray-800 px-2 py-1 text-xs sm:text-sm font-semibold rounded-full">{article.category}</span>
+                <span className="hidden sm:inline-block">{">"}</span>
+                <span className="inline-block bg-emerald-300 text-gray-800 px-2 py-1 text-xs sm:text-sm font-semibold rounded-full">{article.subCategory}</span>
               </div>
-              <div className="text-gray-500 items-center">
+              <div className="text-gray-500 text-xs sm:text-sm flex flex-wrap items-center gap-1 sm:gap-2">
                 <span>{dateFormat(article.createdAt)}</span>
-                <span className="mx-2">•</span>
+                <span className="mx-1 sm:mx-2">•</span>
                 <span>{article.readTime} min read</span>
                 {article.status !== "approved" && (
                   <>
-                    <span className="mx-2">•</span>
+                    <span className="mx-1 sm:mx-2">•</span>
                     <span onClick={article.status == "rejected" ? rejectionReason : undefined}
-                      className={`inline-block ${article.status == "pending" ? "bg-yellow-500 text-gray-800" : "bg-red-500 text-white cursor-pointer"} capitalize px-3 py-1 text-sm font-semibold rounded-full mb-4`}
+                      className={`inline-block ${article.status == "pending" ? "bg-yellow-500 text-gray-800" : "bg-red-500 text-white cursor-pointer"} capitalize px-2 py-1 text-xs sm:text-sm font-semibold rounded-full`}
                     >
                       {article.status}
                     </span>
@@ -266,27 +266,28 @@ export default function ArticlePage() {
                 )}
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{article.title}</h1>
+
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-3 mb-2">{article.title}</h1>
 
             {/* Author Info */}
-            <div className='flex justify-between items-center mt-4'>
+            <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-3 mt-3">
               <Link to={`/profile/${article?.user?._id}`} className="flex items-center bg-gray-200 w-fit">
-                <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-12 h-12 rounded-full mr-4 object-cover" />
+                <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-3 sm:mr-4 object-cover" />
                 <div>
-                  <div className="flex items-center flex-col">
-                    <h3 className="font-medium text-gray-900">{article.user?.fullname}</h3>
-                    <div className="text-gray-500">@{article.user?.username}</div>
+                  <div className="flex flex-col">
+                    <h3 className="font-medium text-gray-900 text-sm sm:text-base">{article.user?.fullname}</h3>
+                    <div className="text-gray-500 text-xs sm:text-sm">@{article.user?.username}</div>
                   </div>
                 </div>
               </Link>
               {!owner && (
                 <button onClick={toggleFollow}
-                  className={`px-6 py-2 border transition-transform shadow-sm rounded-full font-semibold border-green-600 hover:scale-110 duration-300 ease-out
-                ${article.follow ?
+                  className={`px-4 sm:px-6 py-1.5 sm:py-2 border transition-transform shadow-sm rounded-full text-xs sm:text-sm font-semibold border-green-600 hover:scale-105 duration-300 ease-out
+        ${article.follow ?
                       "hover:bg-white hover:text-green-600 bg-green-600 text-white"
                       : " text-green-600 hover:bg-green-600 hover:text-white"}
-                    ${!currentUser && "hidden"}
-                    `}>
+        ${!currentUser && "hidden"}
+        `}>
                   {article.follow ? "Following" : "Follow"}
                 </button>
               )}

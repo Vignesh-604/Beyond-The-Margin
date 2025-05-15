@@ -59,7 +59,7 @@ export default function LoginPopup({ isOpen, onClose, message, title = "Login Re
 
     return (
         <div
-            className={`fixed inset-0 flex items-center cursor-default justify-center z-50 bg-black bg-opacity-70 transition-opacity duration-300 
+            className={`fixed -inset-4 flex items-center cursor-default justify-center z-50 bg-black bg-opacity-70 transition-opacity duration-300 
                 ${closing ? "opacity-0" : "opacity-100"}`}
             onClick={handleOutsideClick}
         >

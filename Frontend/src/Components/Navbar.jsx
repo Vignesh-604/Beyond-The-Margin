@@ -83,14 +83,14 @@ function Navbar() {
                     <div className="flex items-center space-x-4 cursor-pointer">
                         {currentUser ? (
                             <div className="hidden md:flex items-center space-x-4">
-                                <div className="flex items-center max-w-64 line-clamp-1" onClick={() => navigate(`/profile/${currentUser?._id}`)}>
+                                <NavLink className="flex items-center max-w-64 line-clamp-1" to={`/profile/${currentUser?._id}`}>
                                     <img
                                         src={currentUser.avatar || profile}
                                         alt="User avatar"
                                         className="h-10 main-w-10 rounded-full mr-2"
                                     />
                                     <span className="text-sm font-medium">Hello, <br /> {currentUser.fullname}</span>
-                                </div>
+                                </NavLink>
 
                                 <button
                                     onClick={handleLogout}
@@ -134,6 +134,7 @@ function Navbar() {
                     <div className="px-4 space-y-1">
                         <NavLink
                             to="/"
+                            onClick={() => setIsMobileMenuOpen(false)}
                             className={({ isActive }) =>
                                 isActive
                                     ? "block px-3 py-2 rounded-md text-base font-medium text-emerald-600 bg-emerald-50"
@@ -145,6 +146,7 @@ function Navbar() {
 
                         <NavLink
                             to="/articles"
+                            onClick={() => setIsMobileMenuOpen(false)}
                             className={({ isActive }) =>
                                 isActive
                                     ? "block px-3 py-2 rounded-md text-base font-medium text-emerald-600 bg-emerald-50"
@@ -156,6 +158,7 @@ function Navbar() {
 
                         <NavLink
                             to="/about"
+                            onClick={() => setIsMobileMenuOpen(false)}
                             className={({ isActive }) =>
                                 isActive
                                     ? "block px-3 py-2 rounded-md text-base font-medium text-emerald-600 bg-emerald-50"
@@ -168,10 +171,11 @@ function Navbar() {
                         {currentUser && (
                             <NavLink
                                 to="/publish"
+                                onClick={() => setIsMobileMenuOpen(false)}
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "text-emerald-600 font-medium text-sm border-b-2 border-emerald-600 pb-1"
-                                        : "text-gray-500 hover:text-emerald-600 text-sm font-medium"
+                                        ? "block px-3 py-2 rounded-md text-base font-medium text-emerald-600 bg-emerald-50"
+                                        : "block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                                 }
                             >
                                 Publish
@@ -182,16 +186,20 @@ function Navbar() {
                     <div className="px-4 pt-4 pb-3 border-t border-gray-200">
                         {currentUser ? (
                             <div>
-                                <div className="flex items-center mb-3 cursor-pointer" onClick={() => navigate(`/profile/${currentUser?._id}`)}>
+                                <NavLink
+                                    className="flex items-center mb-3 cursor-pointer"
+                                    to={`/profile/${currentUser?._id}`}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
                                     <img
-                                        src={currentUser.avatar || '/default-avatar.png'}
+                                        src={currentUser?.avatar || profile}
                                         alt="User avatar"
-                                        className="h-10 w-10 rounded-full mr-3"
+                                        className="h-10 min-w-10 rounded-full mr-3"
                                     />
                                     <div>
                                         <div className="text-base font-medium text-gray-800">Hello, {currentUser.fullname}</div>
                                     </div>
-                                </div>
+                                </NavLink>
                                 <button
                                     onClick={handleLogout}
                                     className="w-full flex items-center justify-center text-base font-medium text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-full"

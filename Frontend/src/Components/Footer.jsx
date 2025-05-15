@@ -1,14 +1,23 @@
-import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
 import { useAuth } from '../Utils/context';
 import AuthProtectedLink from './AuthLink';
 import logo from "../Assets/Logo.png"
+import axios from 'axios';
 
 function Footer() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/users/logout");
+      navigate("/");
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <footer className="bg-gray-100 border-t border-gray-200 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +36,7 @@ function Footer() {
           {/* Navigation links - using the same as navbar */}
           <div className="md:col-span-2">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Navigation</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <ul className="space-y-3">
                   <li>
@@ -54,6 +63,11 @@ function Footer() {
                       Articles
                     </NavLink>
                   </li>
+
+                </ul>
+              </div>
+              <div>
+                <ul className="space-y-3">
                   <li>
                     <NavLink
                       to="/about"
@@ -66,10 +80,6 @@ function Footer() {
                       About Us
                     </NavLink>
                   </li>
-                </ul>
-              </div>
-              <div>
-                <ul className="space-y-3">
                   {currentUser && (
                     <li>
                       <NavLink
@@ -96,18 +106,30 @@ function Footer() {
                       </AuthProtectedLink>
                     </li>
                   )}
-                  {currentUser && (
+                </ul>
+              </div>
+              {currentUser && (
+                <div>
+                  <ul className="space-y-3">
                     <li>
-                      <div 
+                      <div
                         className="text-gray-600 hover:text-emerald-600 cursor-pointer"
                         onClick={() => navigate(`/profile/${currentUser?._id}`)}
                       >
                         My Profile
                       </div>
                     </li>
-                  )}
-                </ul>
-              </div>
+                    <li>
+                      <div
+                        className="text-gray-600 hover:text-emerald-600 cursor-pointer"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
