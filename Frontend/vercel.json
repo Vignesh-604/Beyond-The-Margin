@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://beyond-the-margin.onrender.com.onrender.com/api/:path*"
+      "destination": "https://beyond-the-margin.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
