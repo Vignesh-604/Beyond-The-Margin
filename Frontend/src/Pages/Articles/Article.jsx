@@ -23,7 +23,7 @@ export default function ArticlePage() {
   const { currentUser } = useAuth()
   const p = useParams()
   const articleId = p.articleId
-  const owner = currentUser._id === article?.user?._id
+  const owner = currentUser?._id === article?.user?._id
 
   useEffect(() => {
     axios.get(`/api/articles/single/${articleId}/${currentUser ? currentUser._id : false}`)
@@ -257,7 +257,7 @@ export default function ArticlePage() {
                 {article.status !== "approved" && (
                   <>
                     <span className="mx-2">•</span>
-                    <span onClick={article.status == "rejected" && rejectionReason}
+                    <span onClick={article.status == "rejected" ? rejectionReason : undefined}
                       className={`inline-block ${article.status == "pending" ? "bg-yellow-500 text-gray-800" : "bg-red-500 text-white cursor-pointer"} capitalize px-3 py-1 text-sm font-semibold rounded-full mb-4`}
                     >
                       {article.status}

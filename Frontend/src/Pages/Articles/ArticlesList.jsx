@@ -4,6 +4,7 @@ import { Search, Clock, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { TrendingArticleCard } from '../../Components/ArticleCards'
 import { categories } from '../../Utils/data';
+import Loading from '../../Components/Loading';
 
 
 export default function ArticlesList() {
@@ -84,12 +85,10 @@ export default function ArticlesList() {
 
   const filteredArticles = articles || []
 
+  if (loading) return <Loading />
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* <div className="flex flex-col mb-8">
-        <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">Articles</h1>
-        <p className="text-gray-600">Discover thoughtful articles on technology, humanities, and personal growth</p>
-      </div> */}
       
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         {/* Search Bar */}
@@ -181,11 +180,7 @@ export default function ArticlesList() {
       )}
       
       {/* Articles Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-        </div>
-      ) : filteredArticles.length > 0 ? (
+      {filteredArticles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredArticles.map((article) => (
             <TrendingArticleCard key={article._id} article={article} />

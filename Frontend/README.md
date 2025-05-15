@@ -8,7 +8,7 @@
 - Enable **OAuth Consent Screen**
 - Create **OAuth Client ID** (type: Web)
 - Add `http://localhost:5173` to "Authorized JavaScript origins"
-
+- TO add hosted link -> OAuth Consent screen -> Clients -> Web Client 1 (name) -> add uri 
 
 **Copy:**
 - `Client ID`
@@ -38,7 +38,7 @@ import { google } from 'googleapis';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "http://localhost:5173"
+  process.env.CORS_ORIGIN
 );
 
 export { oauth2Client };
