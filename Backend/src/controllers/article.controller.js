@@ -30,21 +30,27 @@ const publishArticle = async (req, res) => {
 };
 
 const deleteArticle = async (req, res) => {
-    try {
-        const { articleId } = req.params
-        if (!articleId) {
-            return res.status(404).json(new ApiResponse(404, null, "Article ID not found."));
-        }
+  try {
+    const { articleId } = req.params;
 
-        const deletedArticle = await Article.findByIdAndDelete(articleId).select(" _id ")
-        const confirm = deletedArticle ? true : false
-
-        return res.status(200).json(new ApiResponse(200, confirm, "Deleted article"));
-
-    } catch (error) {
-        return res.status(500).json(new ApiResponse(500, null, "Failed to delete article"));
+    if (!articleId) {
+      return res.status(404).json(new ApiResponse(404, null, "Article ID not found."));
     }
-}
+
+    const deletedArticle = await Article.findByIdAndDelete(articleId).select("_id");
+
+    if (!deletedArticle) {
+      return res.status(404).json(new ApiResponse(404, false, "Article not found."));
+    }
+
+    await Interaction.deleteMany({ article: articleId });
+
+    return res.status(200).json(new ApiResponse(200, true, "Deleted article and its interactions."));
+  } catch (error) {
+    console.error("Error deleting article and interactions:", error);
+    return res.status(500).json(new ApiResponse(500, null, "Failed to delete article"));
+  }
+};
 
 const approveArticle = async (req, res) => {
     const { articleId } = req.params

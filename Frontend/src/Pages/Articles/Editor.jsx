@@ -1,16 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SimpleMDE from 'react-simplemde-editor';
 import ReactMarkdown from "react-markdown";
 import 'simplemde/dist/simplemde.min.css';
 import "github-markdown-css/github-markdown.css";
-import { categories } from '../../Utils/data';
-import { 
-  showConfirmationAlert, 
-  showSuccessAlert, 
-  showErrorAlert, 
-  showValidationErrorAlert 
+import { category } from '../../Utils/data';
+import {
+    showConfirmationAlert,
+    showSuccessAlert,
+    showErrorAlert,
+    showValidationErrorAlert
 } from '../../Utils/alerts';
 import { useAuth } from '../../Utils/context';
 import Loading from '../../Components/Loading';
@@ -24,15 +24,22 @@ const MarkdownEditor = () => {
     const [availableSubcategories, setAvailableSubcategories] = useState([]);
     const [showPreview, setShowPreview] = useState(true);
     const [formValid, setFormValid] = useState(false);
+    const [categories, setCategories] = useState([])
 
-      const { currentUser } = useAuth()
-      const navigate = useNavigate()
-      const [loading, setLoading] = useState(true)
-    
-      useEffect(() => {
+    const { currentUser } = useAuth()
+    const navigate = useNavigate()
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
         if (!currentUser) navigate(-1)
         else setLoading(false)
-      }, [])
+        fetchCats()
+    }, [])
+
+    const fetchCats = async () => {
+        const categoryData = await category();
+        setCategories(categoryData);
+    }
 
     // Check form validity whenever inputs change
     useEffect(() => {
@@ -65,15 +72,15 @@ const MarkdownEditor = () => {
 
     // Validate all form fields
     const validateForm = () => {
-        const isValid = 
-            title.trim() !== '' && 
-            subtitle.trim() !== '' && 
-            content.trim() !== '' && 
-            selectedCategory !== '' && 
+        const isValid =
+            title.trim() !== '' &&
+            subtitle.trim() !== '' &&
+            content.trim() !== '' &&
+            selectedCategory !== '' &&
             selectedCategory !== 'All Categories' &&
-            selectedSubcategory !== '' && 
+            selectedSubcategory !== '' &&
             selectedSubcategory !== 'All Subcategories';
-        
+
         setFormValid(isValid);
         return isValid;
     };
@@ -81,24 +88,24 @@ const MarkdownEditor = () => {
     // Get validation errors for feedback
     const getValidationErrors = () => {
         const errors = [];
-        
+
         if (!title.trim()) errors.push('Title is required');
         if (!subtitle.trim()) errors.push('Subtitle is required');
         if (!content.trim()) errors.push('Content is required');
         if (!selectedCategory || selectedCategory === 'All Categories') errors.push('Please select a category');
         if (!selectedSubcategory || selectedSubcategory === 'All Subcategories') errors.push('Please select a subcategory');
-        
+
         return errors;
     };
 
     const handleSubmitClick = () => {
         const errors = getValidationErrors();
-        
+
         if (errors.length > 0) {
             showValidationErrorAlert(errors);
             return;
         }
-        
+
         showConfirmationAlert({
             title: 'Submit Article',
             text: 'Are you sure you want to submit this article for approval?',
@@ -121,7 +128,7 @@ const MarkdownEditor = () => {
             .then(res => {
                 const articleId = res.data.data._id;
                 showSuccessAlert(
-                    'Article Submitted', 
+                    'Article Submitted',
                     'Your article has been submitted successfully and is awaiting approval.'
                 );
                 navigate(`/articles/${articleId}`);
@@ -129,7 +136,7 @@ const MarkdownEditor = () => {
             .catch(error => {
                 console.error("Error submitting article:", error);
                 showErrorAlert(
-                    'Submission Failed', 
+                    'Submission Failed',
                     'There was an error submitting your article. Please try again later.'
                 );
             });
@@ -203,11 +210,10 @@ const MarkdownEditor = () => {
                 <button
                     onClick={handleSubmitClick}
                     disabled={!formValid}
-                    className={`px-4 py-2 rounded-md w-full md:w-auto transition-colors ${
-                        formValid 
-                            ? 'bg-green-600 text-white hover:bg-green-700' 
-                            : 'bg-gray-700 text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`px-4 py-2 rounded-md w-full md:w-auto transition-colors ${formValid
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-700 text-gray-300 cursor-not-allowed'
+                        }`}
                 >
                     Submit for approval
                 </button>

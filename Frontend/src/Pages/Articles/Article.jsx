@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Bookmark, BookmarkCheck, Trash } from 'lucide-react';
 import Loading from '../../Components/Loading';
 import axios from 'axios';
 import { dateFormat, formatTimestamp } from '../../Utils/utils';
 import ReactMarkdown from "react-markdown";
 import "github-markdown-css/github-markdown.css";
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import profile from "../../Assets/Profile.png"
 import { useAuth } from '../../Utils/context';
 import AuthProtectedLink from '../../Components/AuthLink';
 import Swal from 'sweetalert2';
+import { showConfirmationAlert } from '../../Utils/alerts';
 
 export default function ArticlePage() {
   const [article, setArticle] = useState({});
@@ -19,7 +20,7 @@ export default function ArticlePage() {
   const [replyingTo, setReplyingTo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(true);
-
+  const navigate = useNavigate()
   const { currentUser } = useAuth()
   const p = useParams()
   const articleId = p.articleId
@@ -33,6 +34,7 @@ export default function ArticlePage() {
         setLoading(false);
       })
       .catch(e => {
+        if (e.status == 404) navigate(-1)
         console.log(e);
         setLoading(false);
       });
@@ -222,6 +224,33 @@ export default function ArticlePage() {
       })
   }
 
+  const handleDelete = () => {
+    showConfirmationAlert({
+      title: "Are you sure?",
+      text: "This action will permanently delete the article.",
+      icon: "warning",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      onConfirm: () => {
+        axios.delete(`/api/articles/${article._id}`)
+          .then(res => {
+            console.log(res);
+            
+            if (res.data.data) {
+              navigate(-1);
+            } else {
+              alert("Failed to delete the article.");
+            }
+          })
+          .catch(err => {
+            console.error("Error deleting article:", err);
+            alert("Something went wrong.");
+          });
+      }
+    });
+  };
+
+
   const rejectionReason = () => {
     Swal.fire({
       icon: 'error',
@@ -271,26 +300,46 @@ export default function ArticlePage() {
 
             {/* Author Info */}
             <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-3 mt-3">
-              <Link to={`/profile/${article?.user?._id}`} className="flex items-center bg-gray-200 w-fit">
-                <img src={article.user?.avatar} onError={() => profile} alt="Author avatar" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-3 sm:mr-4 object-cover" />
-                <div>
-                  <div className="flex flex-col">
-                    <h3 className="font-medium text-gray-900 text-sm sm:text-base">{article.user?.fullname}</h3>
-                    <div className="text-gray-500 text-xs sm:text-sm">@{article.user?.username}</div>
+              <div className="flex items-center bg-gray-200 pr-2 justify-between w-full">
+                <Link to={`/profile/${article?.user?._id}`} className="flex items-center">
+                  <img
+                    src={article.user?.avatar}
+                    onError={(e) => { e.target.src = profile }}
+                    alt="Author avatar"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-3 sm:mr-4 object-cover"
+                  />
+                  <div>
+                    <div className="flex flex-col">
+                      <h3 className="font-medium text-gray-900 text-sm sm:text-base">{article.user?.fullname}</h3>
+                      <div className="text-gray-500 text-xs sm:text-sm">@{article.user?.username}</div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-              {!owner && (
-                <button onClick={toggleFollow}
-                  className={`px-4 sm:px-6 py-1.5 sm:py-2 border transition-transform shadow-sm rounded-full text-xs sm:text-sm font-semibold border-green-600 hover:scale-105 duration-300 ease-out
-        ${article.follow ?
-                      "hover:bg-white hover:text-green-600 bg-green-600 text-white"
-                      : " text-green-600 hover:bg-green-600 hover:text-white"}
-        ${!currentUser && "hidden"}
-        `}>
-                  {article.follow ? "Following" : "Follow"}
-                </button>
-              )}
+                </Link>
+
+                {/* Show trash icon only if currentUser is owner */}
+                {currentUser && owner && (
+                  <button
+                    onClick={handleDelete} title='Delete article'
+                    className="ml-3 text-red-600 hover:text-red-800 transition-all"
+                  >
+                    <Trash className="w-5 h-5" />
+                  </button>
+                )}
+
+                {/* Show Follow button if not owner and currentUser exists */}
+                {!owner && currentUser && (
+                  <button
+                    onClick={toggleFollow}
+                    className={`px-4 sm:px-6 py-1.5 sm:py-2 border transition-transform shadow-sm rounded-full text-xs sm:text-sm font-semibold border-green-600 hover:scale-105 duration-300 ease-out
+                      ${article.follow
+                        ? "hover:bg-white hover:text-green-600 bg-green-600 text-white"
+                        : " text-green-600 hover:bg-green-600 hover:text-white"}
+                      `}
+                  >
+                    {article.follow ? "Following" : "Follow"}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

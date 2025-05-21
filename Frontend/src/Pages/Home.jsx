@@ -5,7 +5,7 @@ import axios from "axios"
 import { dateFormat } from '../Utils/utils';
 import Loading from '../Components/Loading';
 import { Link } from 'react-router-dom';
-import { categories } from '../Utils/data';
+import { category } from '../Utils/data';
 import AuthProtectedLink from '../Components/AuthLink';
 
 export default function HomePage() {
@@ -13,8 +13,10 @@ export default function HomePage() {
   const [trending, setTrending] = useState([])
   const [explore, setExplore] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
+    fetchCats()
     axios.get(`/api/articles/trending`)
       .then(res => {
         const data = res.data.data
@@ -27,6 +29,11 @@ export default function HomePage() {
       })
   }, [])
 
+  const fetchCats = async () => {
+    const categoryData = await category();
+    setCategories(categoryData);
+  }
+  
   useEffect(() => {
     axios.get(`/api/articles/filtered?filter=${selectedCategory}`)
       .then(res => {

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Clock, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, X } from 'lucide-react';
 import { TrendingArticleCard } from '../../Components/ArticleCards'
-import { categories } from '../../Utils/data';
+import { category } from '../../Utils/data';
 import Loading from '../../Components/Loading';
 
 
@@ -23,11 +22,17 @@ export default function ArticlesList() {
     hasNextPage: false,
     hasPrevPage: false
   });
-
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
+    fetchCats()
     fetchArticles();
   }, [selectedCategory, selectedSubcategory, currentPage]);
+
+  const fetchCats = async () => {
+    const categoryData = await category();
+    setCategories(categoryData);
+  }
 
   useEffect(() => {
     // Reset to page 1 when filters change
