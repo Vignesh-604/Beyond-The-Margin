@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Briefcase, Book, Users, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import Loading from "../Components/Loading"
-import AuthProtectedLink from '../Components/AuthLink';
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -28,10 +27,6 @@ export default function AboutPage() {
 
     fetchAboutData();
   }, []);
-
-  const handleNavigateToProfile = (name) => {
-    navigate(`/profile/${name.toLowerCase().replace(/ /g, '-')}`);
-  };
 
   if (loading) {
     return <Loading />;
@@ -57,9 +52,6 @@ export default function AboutPage() {
   if (!pageData) {
     return null;
   }
-
-  // Prepare team members with proper formatting
-  const teamMembers = pageData.members || [];
 
   return (
     <div className="bg-white min-h-screen">
@@ -130,92 +122,6 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-
-        {/* Founder Section */}
-        {pageData.founder && (
-          <div className="mb-20">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <Briefcase className="mr-3 h-6 w-6 text-emerald-700" />
-              Founder
-            </h2>
-
-            <div className="flex flex-col md:flex-row gap-10 items-center">
-              <div className="md:w-1/3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-emerald-200 rounded-lg transform rotate-3"></div>
-                  <img
-                    src={pageData.founder.image}
-                    alt={pageData.founder.name}
-                    className="relative z-10 rounded-lg shadow-lg w-full h-96 object-cover"
-                  />
-                </div>
-              </div>
-              <div className="md:w-2/3">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{pageData.founder.name}</h3>
-                <p className="text-emerald-700 font-medium text-lg mb-4">{pageData.founder.role}</p>
-                <div className="prose max-w-none text-gray-600 text-lg">
-                  <ReactMarkdown>{pageData.founder.bio}</ReactMarkdown>
-                </div>
-                <div className="mt-6">
-                  <AuthProtectedLink
-                    to={`/profile/${pageData.founder.user}`}
-                    className="px-6 py-2 bg-emerald-700 text-white rounded-md hover:bg-emerald-800 transition"
-                    title="Join Our Community"
-                    message="Please log in to view this author's profile and discover more of their content."
-
-                  >
-                    View Profile
-                  </AuthProtectedLink>
-                </div>
-              </div>
-            </div>
-
-            {pageData.founder.message && (
-              <div className="mt-12 bg-emerald-50 p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">A Message From Our Founder</h3>
-                <blockquote className="italic text-gray-600 border-l-4 border-emerald-300 pl-4">
-                  <div className="italic text-gray-600">
-                    <ReactMarkdown>{pageData.founder.message}</ReactMarkdown>
-                  </div>
-                </blockquote>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Team Section */}
-        {teamMembers.length > 0 && (
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <Users className="mr-3 h-6 w-6 text-emerald-700" />
-              Our Team
-            </h2>
-
-            {/* Calculate the number of columns needed */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member, index) => (
-                <AuthProtectedLink
-                  to={`/profile/${member.user}`}
-                  key={index}
-                  className={`bg-white rounded-lg shadow-md overflow-hidden transition transform hover:-translate-y-1 hover:shadow-lg
-                    ${teamMembers.length % 3 === 1 && index === teamMembers.length - 1 ? 'md:col-span-2 lg:col-span-1 lg:col-start-2' : ''}`}
-                  title="Join Our Community"
-                  message="Please log in to view this author's profile and discover more of their content."
-                >
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-72 h-72 object-cover object-center"
-                  />
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                    <p className="text-emerald-700 font-medium mb-2">{member.role}</p>
-                  </div>
-                </AuthProtectedLink>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div >
   );

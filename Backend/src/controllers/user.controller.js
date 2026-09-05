@@ -10,7 +10,22 @@ import { nanoid } from "nanoid";
 import CryptoJS from "crypto-js";
 
 const googleAuth = async (req, res) => {
-    const { code, mode } = req.query;
+    const { code } = req.query;
+
+    // No code yet → start the OAuth dance by sending the browser to Google.
+    if (!code) {
+        const mode = req.query.mode || "login";
+        const authUrl = oauth2Client.generateAuthUrl({
+            access_type: "offline",
+            scope: ["openid", "profile", "email"],
+            redirect_uri: process.env.GOOGLE_REDIRECT_URI || "http://localhost:5173",
+            state: mode,
+            prompt: "select_account",
+        });
+        return res.redirect(authUrl);
+    }
+
+    const mode = req.query.mode || "login";
 
     const options = {
         httpOnly: true,
@@ -30,7 +45,12 @@ const googleAuth = async (req, res) => {
 
     try {
         // Get tokens from Google
-        const { tokens } = await oauth2Client.getToken(code);
+        // The full-page redirect flow mints codes with redirect_uri=GOOGLE_REDIRECT_URI,
+        // so the token exchange must use the same redirect_uri (or it fails).
+        const { tokens } = await oauth2Client.getToken({
+            code,
+            redirect_uri: process.env.GOOGLE_REDIRECT_URI || "http://localhost:5173",
+        });
         oauth2Client.setCredentials(tokens);
 
         // Get user info from Google
@@ -82,7 +102,8 @@ const googleAuth = async (req, res) => {
             .json(new ApiResponse(201, user, "Signup successful"))
 
     } catch (err) {
-        return res.status(500).json(new ApiResponse(500, err, "Google login failed"));
+        console.error("Google login error:", err?.message || err);
+        return res.status(500).json(new ApiResponse(500, err?.message || err, "Google login failed"));
     }
 };
 

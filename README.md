@@ -81,6 +81,42 @@
 * Cloudinary account (for images)
 * Google OAuth credentials
 
+## Running Locally
+
+Backend and frontend run **separately** (matching how they're deployed — backend on Render, frontend on Vercel).
+
+Install dependencies:
+
+```bash
+cd Backend
+npm install
+```
+
+```bash
+cd Frontend
+npm install
+```
+
+Run each in its own terminal:
+
+```bash
+cd Backend
+npm run dev    # → http://localhost:5000
+```
+
+```bash
+cd Frontend
+npm run dev    # → http://localhost:5173
+```
+
+The frontend proxies `/api/*` to the backend automatically
+(`http://localhost:5000`, configurable via `VITE_PROXY`). In development the
+backend allows CORS from any `localhost` origin, so the frontend works
+regardless of which port it runs on.
+
+> Note: Google OAuth requires the frontend origin (`http://localhost:<port>`)
+> to be registered in Google Cloud Console → OAuth Client.
+
 ## Deployment
 
 * **Frontend**: Deployed on **Vercel**
